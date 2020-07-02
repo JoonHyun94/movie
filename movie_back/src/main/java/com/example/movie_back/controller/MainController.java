@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import com.example.movie_back.service.movielist.face.MovieListService;
 
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,4 +32,5 @@ public class MainController {
     
         return movieList;
     }
+
 }

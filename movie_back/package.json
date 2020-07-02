@@ -8,5 +8,9 @@
     "start": "mvnw spring-boot:run"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "react-circular-progressbar": "^2.0.3",
+    "react-motion": "^0.5.2"
+  }
 }

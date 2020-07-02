@@ -1,6 +1,5 @@
 package com.example.movie_back.service.movielist.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -48,12 +47,10 @@ public class MovieListServiceImpl implements MovieListService {
         try {
             //get page (= 브라우저에서 url을 주소창에 넣은 후 request 한 것과 같다)
             driver.get(url);
-            
-            webElement = driver.findElement(By.className("btn-more-fontbold"));
-            webElement.click();
-
-            Thread.sleep(1000);
-    
+			webElement = driver.findElement(By.className("btn-more-fontbold"));
+			webElement.click();
+			
+            Thread.sleep(100);
         } catch (Exception e) {
             e.printStackTrace();
 		}
@@ -71,11 +68,10 @@ public class MovieListServiceImpl implements MovieListService {
 		
 		// list-more
 		Elements elmoretitle = doc.select(".list-more .title");
-		Elements elmoregrade = doc.select(".ico-grade");
+		Elements elmoregrade = doc.select(".list-more .ico-grade");
 		Elements elmoreimg = doc.select(".list-more .thumb-image > img");
-		Elements elmorepercent = doc.select("strong.percent span");
-		Elements elmoreopening = doc.select("span.txt-info strong");
-		System.out.println(elmoregrade);
+		Elements elmorepercent = doc.select(".list-more strong.percent span");
+		Elements elmoreopening = doc.select(".list-more span.txt-info strong");
 
 		String rank;
 		String title;
@@ -124,8 +120,6 @@ public class MovieListServiceImpl implements MovieListService {
 			list.add(movieMap);
 		}
 		
-		System.out.println(list);
-
 		System.out.println("============================================================");
 
 		return list;
