@@ -1,5 +1,6 @@
 package com.example.movie_back.service.movielist.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -124,5 +125,30 @@ public class MovieListServiceImpl implements MovieListService {
 
 		return list;
 	}
-	
+
+	public ArrayList<HashMap<String,String>> getTopMovieList() {
+		HashMap<String,String> movieMap = new HashMap<String,String>();
+		ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+		String url = "http://www.cgv.co.kr/movies/"; //크롤링할 url지정
+		Document doc = null;        //Document에는 페이지의 전체 소스가 저장된다
+
+		try {
+			doc = Jsoup.connect(url).get();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//select를 이용하여 원하는 태그를 선택한다. select는 원하는 값을 가져오기 위한 중요한 기능이다.
+		Elements elimg = doc.select(".sect-movie-chart .thumb-image > img");    
+
+		for(int i = 0; i < elimg.size(); i++) {
+			movieMap = new HashMap<String,String>();
+			String img = elimg.get(i).attr("src");
+
+			movieMap.put("img", img);
+
+			list.add(movieMap);
+		}
+
+		return list;
+	}
 }

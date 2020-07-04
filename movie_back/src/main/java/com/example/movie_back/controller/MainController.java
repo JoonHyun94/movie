@@ -33,4 +33,11 @@ public class MainController {
         return movieList;
     }
 
+    @GetMapping("/main")
+    public ArrayList<HashMap<String,String>> topMovieList() {
+
+        movieList = movieListService.getTopMovieList();
+
+        return movieList;
+    }
 }

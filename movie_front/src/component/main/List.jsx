@@ -154,6 +154,7 @@ const Opening = styled.div`
 `
 const TopRank = styled.div`
     width: 98%;
+    margin-top: 2vw;
     margin-bottom: 2vw;
     font-size: 1.5vw;
     font-weight: bold;
