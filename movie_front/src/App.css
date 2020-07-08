@@ -28,6 +28,12 @@
   color: #61dafb;
 }
 
+@font-face { font-family: 'NanumGothic';
+  src: url('/fonts/NanumGothic.eot');
+  src: url('/fonts/NanumGothic.eot') format('embedded-opentype'),
+  url('/fonts/NanumGothic.woff') format('woff');
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -40,3 +46,5 @@
 .nav_var {
   margin-bottom: 0;
 }
+
+body {font-family: 'NanumGothic', 'serif';}
