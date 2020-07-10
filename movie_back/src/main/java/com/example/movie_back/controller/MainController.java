@@ -5,15 +5,16 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.example.movie_back.dto.MemberVO;
+import com.example.movie_back.service.member.face.MemberService;
 import com.example.movie_back.service.movielist.face.MovieListService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.tags.Param;
 
 // CrossWeb 설정 -> 허용 주소
 @CrossOrigin(origins = "http://localhost:3000")
@@ -21,7 +22,9 @@ import org.springframework.web.servlet.tags.Param;
 public class MainController {
 	@Autowired
     MovieListService movieListService;
-    
+    @Autowired
+    MemberService memberService;
+
     //Properties
     public static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
     public static final String WEB_DRIVER_PATH = "C:/Program Files/selenium/chromedriver_win32/chromedriver.exe";
@@ -47,8 +50,23 @@ public class MainController {
     }
 
     @PostMapping("/sign")
-    public ArrayList<HashMap<String,String>> sign(@RequestBody Param param) {
-        System.out.println(param);
-        return movieList;
+    public void sign(HttpServletRequest req, MemberVO mem, Model model) {
+        System.out.println("-------------------------");
+        System.out.println(req.getParameter("name"));
+        System.out.println(req.getParameter("id"));
+        System.out.println(req.getParameter("pw"));
+        System.out.println(req.getParameter("number"));
+        System.out.println(req.getParameter("email"));
+        System.out.println(req.getParameter("gender"));
+        System.out.println("-------------------------");
+
+        mem.setName(req.getParameter("name"));
+        mem.setId(req.getParameter("id"));
+        mem.setPw(req.getParameter("pw"));
+        mem.setPhone_Number(req.getParameter("number"));
+        mem.setEmail(req.getParameter("email"));
+        mem.setGender(req.getParameter("gender"));
+
+        memberService.setMember(mem);
     }
 }

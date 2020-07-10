@@ -174,10 +174,10 @@ const Logintext = styled.input`
     border-bottom: 1px solid black;
     border-width: 0.1vw;
     outline: none;
-    background-color:transparent;
+    background-color: transparent;
     font-size: 1vw;
-    maxlength = 10;
     vertical-align: bottom;
+    autocomplete: off;
 `
 const Loginimg = styled.img`
     width: 5%;
@@ -229,8 +229,8 @@ const Button = styled.button`
         //              spread(그림자 확장) 0, 
         //              color(색상) rgba로 투명도 적용, 
         //              inset 안쪽에만 적용
-        box-shadow: 200px 0 0 0 rgba(0,0,0,0.25) inset, 
-                    -200px 0 0 0 rgba(0,0,0,0.25) inset;
+        box-shadow: 250px 0 0 0 rgba(0,0,0,0.25) inset, 
+                    -250px 0 0 0 rgba(0,0,0,0.25) inset;
     }
     @media only screen and (max-width: 1100px) {
         margin-top: 2vw;
@@ -288,6 +288,9 @@ const Dplctcheck = styled(Button)`
         }
     }
 `
+const LoginDplct = styled(Button)`
+    width: 25%;
+`
 
 class Main extends Component {
     state = {
@@ -298,6 +301,8 @@ class Main extends Component {
         id: null,
         pw: null,
         number: null,
+        email: null,
+        gender: null,
         sign: false,
         newHeight: 0,
         headerHeight: 0,
@@ -408,7 +413,10 @@ class Main extends Component {
         this.setState({
             [e.target.id]: e.target.value,
             [e.target.pw]: e.target.value,
-            [e.target.number]: e.target.value
+            [e.target.number]: e.target.value,
+            [e.target.name]: e.target.value,
+            [e.target.email]: e.target.value,
+            [e.target.gender]: e.target.value
         });
         if(e.target.value.length > 11) {
             e.target.value = e.target.value.slice(0, 11);
@@ -416,24 +424,34 @@ class Main extends Component {
     }
 
     sign () {
-        this.setState({ 
-            sign: true
+        this.setState({
+            sign: !this.state.sign
         });
     }
 
     completeSign () {
         let form = new FormData()
-        form.append('name', "sssdddds")
+        form.append('name', this.state.name)
+        form.append('id', this.state.id)
+        form.append('pw', this.state.pw)
+        form.append('number', this.state.number)
+        form.append('email', this.state.email)
+        form.append('gender', this.state.gender)
 
-        axios.post('http://localhost:8088/sign', form, { headers: {
-            'Content-Type': 'multipart/form-data'
-        }})
-        .then(res => {
-            console.log('response : ', JSON.stringify(res, null, 2));
-        });
-        this.setState({ 
-            sign: false
-        });
+        axios.post('http://localhost:8088/sign', form, { headers: { 'Content-Type': 'multipart/form-data;' }})
+            .then(res => {
+                console.log('response : ', JSON.stringify(res, null, 2));
+            });
+            this.setState({ 
+                sign: false,
+                name: null,
+                id: null,
+                pw: null,
+                number: null,
+                email: null,
+                gender: null
+            });
+
     }
 
     render() {
@@ -458,11 +476,11 @@ class Main extends Component {
                                 <Span>로그인</Span>
                             </Title>
                             <Inputdiv sign = 'false'>
-                                <Logintext placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
+                                <Logintext name = "id" placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
                                 <Loginimg src = { id }/>
                             </Inputdiv>
                             <Inputdiv sign = 'false'> 
-                                <Logintext placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
+                                <Logintext name = "pw" placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
                                 <Loginimg src = { pw }/>
                             </Inputdiv>
                             <Buttondiv>
@@ -479,35 +497,36 @@ class Main extends Component {
                             </Title>
                             <Form onSubmit = { () => this.completeSign() }>
                                 <Inputdiv sign = 'true'>
-                                    <Logintext placeholder='이름을 입력하세요' type = "text" value = { this.state.name } onChange = { this.maxLengthCheck }></Logintext>
+                                    <Logintext name = "name" placeholder='이름을 입력하세요' type = "text" value = { this.state.name } onChange = { this.maxLengthCheck }></Logintext>
                                     <Loginimg src = { name }/>
                                 </Inputdiv>
                                 <Inputdiv dplct = "true" sign = 'true'>
-                                    <Logintext placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
+                                    <Logintext name = "id" placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
                                     <Dplctcheck>중복체크</Dplctcheck>
                                 </Inputdiv>
                                 <Inputdiv dplct = "true" sign = 'true'>
-                                    <Logintext placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
+                                    <Logintext name = "pw" placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
                                     <Dplctcheck>중복체크</Dplctcheck>
                                 </Inputdiv>
                                 <Inputdiv sign = 'true'>
-                                    <Logintext placeholder="전화번호를 입력하세요 ('-')는 포함X" type = "text" value = { this.state.number } onChange = { this.maxLengthCheck }></Logintext>
+                                    <Logintext name = "number" placeholder="전화번호를 입력하세요 ('-')는 포함X" type = "text" value = { this.state.number } onChange = { this.maxLengthCheck }></Logintext>
                                     <Loginimg src = { phone }/>
                                 </Inputdiv>
                                 <Inputdiv sign = 'true'>
-                                    <Logintext placeholder='e-mail을 입력하세요' type = "email"></Logintext>
+                                    <Logintext name = "email" placeholder='e-mail을 입력하세요' type = "email" value = { this.state.email } onChange = { this.maxLengthCheck }></Logintext>
                                     <Loginimg src = { email }/>
                                 </Inputdiv>
                                 <Inputdiv label = 'true' sign = 'true'>
                                         <Label for="male">남자
-                                            <Logintext label = 'true' id = "male" type = "radio" name="gender" value="male"/>
+                                            <Logintext label = 'true' id = "male" type = "radio" name="gender" value = "male" onChange = { this.maxLengthCheck }/>
                                         </Label>
                                         <Label for="female">여자
-                                            <Logintext label = 'true' id = "female" type = "radio" name="gender" value="female"/>
+                                            <Logintext label = 'true' id = "female" type = "radio" name="gender" value = "female" onChange = { this.maxLengthCheck }/>
                                         </Label>
                                 </Inputdiv>
                                 <Buttondiv sign = 'true'>
-                                    <Button type = "submit">회원가입</Button>
+                                    <LoginDplct onClick = { () => this.sign() }>로그인</LoginDplct>&emsp;&emsp;
+                                    <LoginDplct type = "submit">회원가입</LoginDplct>
                                 </Buttondiv>
                             </Form>
                         </Loginform>
