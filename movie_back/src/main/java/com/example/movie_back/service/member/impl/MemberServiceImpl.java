@@ -13,6 +13,39 @@ public class MemberServiceImpl implements MemberService {
     private MemberDao memberDao;
     
     @Override
+    public boolean login(MemberVO mem){
+        boolean result = true;
+
+        String id = memberDao.selectId(mem);
+        String pw = memberDao.selectPw(mem);
+
+        System.out.println("id : " + id);
+        System.out.println("pw : " + pw);
+        if(id.equalsIgnoreCase("null") || pw.equalsIgnoreCase("null")){
+            result = false;
+        }
+
+        return result;
+    }
+
+    @Override
+    public String getName(MemberVO mem){
+        return memberDao.selectName(mem);
+    }
+
+    @Override
+    public boolean dplctId(MemberVO dplctid){
+        boolean result = false;
+        String id = memberDao.selectId(dplctid);
+
+        if(id.equalsIgnoreCase("null")){
+            result = true;
+        }
+
+        return result;
+    }
+
+    @Override
     public void setMember(MemberVO mem){
         memberDao.insertMember(mem);
     }

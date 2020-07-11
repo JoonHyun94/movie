@@ -3,6 +3,21 @@
 
 <mapper namespace="com.example.movie_back.dao.member.MemberDao">
 	
+	<select id = "selectId" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
+		SELECT NVL(MAX(id), 'null') FROM member
+		WHERE id = #{id }
+	</select>
+
+	<select id = "selectPw" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
+		SELECT NVL(MAX(pw), 'null') FROM member
+		WHERE pw = #{pw }
+	</select>
+
+	<select id = "selectName" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
+		SELECT NVL(MAX(name), 'null') FROM member
+		WHERE id = #{id } AND pw = #{pw }
+	</select>
+
 	<insert id = "insertMember" parameterType = "com.example.movie_back.dto.MemberVO">
         INSERT INTO member
 		VALUES (#{id }, #{pw }, #{name }, #{phone_number }, #{email }, #{gender }, SYSDATE)

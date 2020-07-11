@@ -49,6 +49,36 @@ public class MainController {
         return movieList;
     }
 
+    @PostMapping("/login")
+    public String login(HttpServletRequest req, MemberVO mem) {
+        boolean result;
+        String name;
+
+        mem.setId(req.getParameter("id"));
+        mem.setPw(req.getParameter("pw"));
+        result = memberService.login(mem);
+        
+        if(result == true) {
+            name = memberService.getName(mem);
+        } else {
+            name = "null";
+        }
+
+        return name;
+    }
+
+    @PostMapping("/dplct")
+    public boolean dplct(HttpServletRequest req, MemberVO mem) {
+        boolean result;
+
+        mem.setId(req.getParameter("id"));
+        result = memberService.dplctId(mem);
+
+        System.out.println(result);
+
+        return result;
+    }
+
     @PostMapping("/sign")
     public void sign(HttpServletRequest req, MemberVO mem, Model model) {
         System.out.println("-------------------------");
