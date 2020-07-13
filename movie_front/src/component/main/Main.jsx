@@ -107,6 +107,7 @@ const Movieimg = styled.img`
     height: auto;
 `
 const Loginform = styled.div`
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -384,7 +385,7 @@ class Main extends Component {
         this.state.newHeight = 100 - ((this.state.prevHeaderHeight) / (window.innerHeight) * 100);
         this.state.mainTag = document.querySelector("[id = 'Main_Back']");
         this.state.mainTag.style.height = this.state.newHeight + "vh";
-        
+    
         this.getApi();
         setInterval(this.onHeight, 10);
     };
@@ -460,9 +461,17 @@ class Main extends Component {
                     alert("아이디와 비밀번호를 확인해주세요");
                 } else {
                     this.setState({
-                        user: res.data,
+                        user: res.data.name,
                         login: !this.state.login
                     });
+                    window.sessionStorage.setItem('id', res.data.id);
+                    window.sessionStorage.setItem('pw', res.data.pw);
+                    window.sessionStorage.setItem('name', res.data.name);
+                    console.log(sessionStorage);
+
+                    window.location.reload();
+
+                    document.querySelector(".loginform").style.height = (document.querySelector(".slidebody").offsetHeight / window.innerHeight) * 100 + "vh";
                 }
                 console.log('response : ', res);
             });
@@ -470,11 +479,17 @@ class Main extends Component {
     }
 
     logout () {
+        document.querySelector(".loginform").style.height = (document.querySelector(".slidebody").offsetHeight / window.innerHeight) * 100 + "vh";
+
         this.setState({
-            login: !this.state.login,
             id: null,
-            pw: null
+            pw: null,
+            login: !this.state.login
         });
+        
+        window.sessionStorage.clear();
+        console.log(sessionStorage);
+        window.location.reload();
     }
 
     sign () {
@@ -575,7 +590,7 @@ class Main extends Component {
                             })}
                         </Scroll_child>
                     </Scroll_body>
-                    { login === false ?
+                    { login === false && sessionStorage.length === 0 ?
                         <React.Fragment>
                         { sign === false ?
                             <Loginform sign = 'false' className = "loginform">
@@ -641,17 +656,19 @@ class Main extends Component {
                         }
                         </React.Fragment>
                         :
-                        <Loginform sign = 'false' className = "loginform">
-                            <Title>
-                                <Logo src = { cgv_logo }/>
-                                <Span>로그인</Span>
-                            </Title>
-                            <Span user = "true">{ this.state.user }님 환영합니다.</Span>
-                            <Buttondiv>
-                                <Button>MY페이지</Button>
-                                <Button onClick = { () => this.logout() }>로그아웃</Button>
-                            </Buttondiv>
-                        </Loginform>
+                        <React.Fragment>
+                            <Loginform className = "loginform">
+                                <Title>
+                                    <Logo src = { cgv_logo }/>
+                                    <Span>로그인</Span>
+                                </Title>
+                                <Span user = "true">{ sessionStorage.name }님 환영합니다.</Span>
+                                <Buttondiv>
+                                    <Button>MY페이지</Button>
+                                    <Button onClick = { () => this.logout() }>로그아웃</Button>
+                                </Buttondiv>
+                            </Loginform>
+                        </React.Fragment>
                     }
                 </Login>
             </MainBack>

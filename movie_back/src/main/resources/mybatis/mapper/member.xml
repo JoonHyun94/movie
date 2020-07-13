@@ -13,8 +13,8 @@
 		WHERE pw = #{pw }
 	</select>
 
-	<select id = "selectName" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
-		SELECT NVL(MAX(name), 'null') FROM member
+	<select id = "selectUser" parameterType="com.example.movie_back.dto.MemberVO" resultType="com.example.movie_back.dto.MemberVO">
+		SELECT * FROM member
 		WHERE id = #{id } AND pw = #{pw }
 	</select>
 

@@ -29,8 +29,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String getName(MemberVO mem){
-        return memberDao.selectName(mem);
+    public MemberVO getUser(MemberVO mem){
+        return memberDao.selectUser(mem);
     }
 
     @Override

@@ -6,7 +6,7 @@ public interface MemberService {
 
     public boolean login(MemberVO mem);
 
-    public String getName(MemberVO mem);
+    public MemberVO getUser(MemberVO mem);
 
     public boolean dplctId(MemberVO dplctid);
 

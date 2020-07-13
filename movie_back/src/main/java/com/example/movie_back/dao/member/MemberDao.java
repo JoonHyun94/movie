@@ -11,7 +11,7 @@ public interface MemberDao {
 
     public String selectPw(MemberVO selectPw);
 
-    public String selectName(MemberVO selectName);
+    public MemberVO selectUser(MemberVO selectUser);
 
     public void insertMember(MemberVO mem);
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.example.movie_back.dto.MemberVO;
 import com.example.movie_back.service.member.face.MemberService;
@@ -50,25 +51,29 @@ public class MainController {
     }
 
     @PostMapping("/login")
-    public String login(HttpServletRequest req, MemberVO mem) {
+    public MemberVO login(HttpServletRequest req, HttpSession session, MemberVO mem) {
         boolean result;
         String name;
+        session = req.getSession();
 
         mem.setId(req.getParameter("id"));
         mem.setPw(req.getParameter("pw"));
         result = memberService.login(mem);
-        
+
         if(result == true) {
-            name = memberService.getName(mem);
+            mem = memberService.getUser(mem);
+            session.setAttribute("member", mem);
         } else {
             name = "null";
         }
 
-        return name;
+        System.out.println(session.getAttribute("member"));
+
+        return mem;
     }
 
     @PostMapping("/dplct")
-    public boolean dplct(HttpServletRequest req, MemberVO mem) {
+    public boolean dplct(HttpServletRequest req, HttpSession session, MemberVO mem) {
         boolean result;
 
         mem.setId(req.getParameter("id"));

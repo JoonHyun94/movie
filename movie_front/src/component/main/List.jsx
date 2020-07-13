@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { withStyles } from '@material-ui/core/styles';
 import { Motion, spring } from 'react-motion';
+import ticket from '../../image/ticket.png';
 
 const Mainloading = styled.div`
     position: absolute;
@@ -148,7 +149,6 @@ const Percent = styled.div`
 `
 const Opening = styled.div`
     font-size: 0.8vw;
-    margin-bottom: 4vw;
     text-align: left;
     opacity: 0.8;
 `
@@ -175,6 +175,37 @@ const ListMore = styled.div`
     border-width: 0.3vw;
     line-height: 3vw;
 `
+const Reserve = styled.button`
+    cursor: pointer;
+    margin-top: 1vw;
+    margin-bottom: 4vw;
+    width: 50%;
+    height: auto;
+    border: none;
+    border-radius: 8px;
+    padding: 0.3vw;
+    background-color: #F5DA81;
+    white-space: pre;
+    font-family: JejuGothic, NanumGothic;
+    font-size: 0.8vw;
+    transition: all 0.8s, color 0.8s; // 마우스오버 시 box-shadow 0.8s, 텍스트 색깔 0.8s 설정
+    &:hover {
+        color: #fff;
+        // box-shadow:  x-positon(가로) +-150px로 양옆으로 그림자생성, 
+        //              y-position(세로) 0,
+        //              blur(흐림) 0, 
+        //              spread(그림자 확장) 0, 
+        //              color(색상) rgba로 투명도 적용, 
+        //              inset 안쪽에만 적용
+        box-shadow: 250px 0 0 0 rgba(0,0,0,0.25) inset, 
+                    -250px 0 0 0 rgba(0,0,0,0.25) inset;
+    }
+`
+const Reserveimg = styled.img`
+    margin-right: 0.5vw;
+    width: 35%;
+`
+
 const styles = theme => ({
     progress: {
       margin: theme.spacing.unit * 2
@@ -289,6 +320,7 @@ class List extends Component {
                             <Info>
                                 <Percent>예매율&emsp;{ el.percent }</Percent>
                                 <Opening>{ el.opening }</Opening>
+                                <Reserve><Reserveimg src = { ticket }/>예매하기</Reserve>
                             </Info>
 
                             { this.state.listNum === 7 ?

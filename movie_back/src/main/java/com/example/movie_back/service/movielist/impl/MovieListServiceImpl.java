@@ -51,7 +51,7 @@ public class MovieListServiceImpl implements MovieListService {
 			webElement = driver.findElement(By.className("btn-more-fontbold"));
 			webElement.click();
 			
-            Thread.sleep(100);
+            Thread.sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
 		}

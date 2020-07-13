@@ -25,6 +25,13 @@ const Menu = styled.div`
 `
 
 class TopMenuComponent extends Component { 
+
+    logout() {
+        window.sessionStorage.clear();
+        window.location.reload();
+        this.reload();
+    }
+
     render() { 
         return ( 
             <Router> 
@@ -33,7 +40,12 @@ class TopMenuComponent extends Component {
                     <Menu_frame>
                         <a href="/main"><Menu>Home</Menu></a>
                         <a href="/list"><Menu>무비차트</Menu></a>
+                        { sessionStorage.length > 1 ?
+                            <Menu login = "true" onClick = { () => this.logout()}>logout</Menu>
+                            : ""
+                        }
                     </Menu_frame>
+
                 </Navbar>
                 <Route path="/main" component = { MainComponent }/> 
                 <Route path="/list" component = { ListComponent }/> 
