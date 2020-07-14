@@ -18,9 +18,14 @@
 		WHERE id = #{id } AND pw = #{pw }
 	</select>
 
+	<select id = "selectSecurityNumber" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
+		SELECT NVL(MAX(security_number), 'null') FROM member
+		WHERE security_number = #{security_number }
+	</select>
+
 	<insert id = "insertMember" parameterType = "com.example.movie_back.dto.MemberVO">
         INSERT INTO member
-		VALUES (#{id }, #{pw }, #{name }, #{phone_number }, #{email }, #{gender }, SYSDATE)
+		VALUES (#{id }, #{pw }, #{name }, #{security_number }, #{phone_number }, #{email }, #{gender }, SYSDATE)
 	</insert>
    
  </mapper>

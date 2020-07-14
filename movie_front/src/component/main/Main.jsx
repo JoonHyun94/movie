@@ -5,6 +5,7 @@ import { generateMedia } from 'styled-media-query';
 import cgv_main from '../../image/cgv_main.jpg';
 import cgv_logo from '../../image/cgv_logo.png';
 import name from '../../image/name.png';
+import security from '../../image/security_number.png';
 import id from '../../image/id.png';
 import pw from '../../image/pw.png';
 import phone from '../../image/phone.png';
@@ -60,6 +61,9 @@ const Login = styled.div`
     transform:translate(-50%, -50%);
     @media only screen and (max-width: 1100px) {
         width: 60%;
+    }
+    @media only screen and (max-width: 900px) {
+        width: 70%;
     }
     @media only screen and (orientation: portrait) {
         @media only screen and (max-width: 900px) {
@@ -120,7 +124,16 @@ const Form = styled.form`
 `
 const Title = styled.div`
     flex-direction: row;
-    width: 50%;
+    width: ${ 
+        props => {
+            switch(props.findUser) {
+                case 'true' :
+                    return '60%';
+                default :
+                    return '50%';
+            }
+        }
+    };
     margin-top: 2vw;
     margin-bottom: 3vw;
 `
@@ -179,11 +192,33 @@ const Inputdiv = styled.div`
 const Logintext = styled.input`
     width: ${ 
         props => {
-            switch(props.label) {
-                case 'true' :
-                    return '30%';
+            switch(props.security) {
+                case 'first' :
+                    return '32%';
+                case 'second' :
+                    return '32%';
                 default : 
                     return '70%';
+            }
+        }
+    };
+    margin-right: ${ 
+        props => {
+            switch(props.security) {
+                case 'first' :
+                    return '0.5vw';
+                default : 
+                    return '0';
+            }
+        }
+    };
+    margin-left: ${ 
+        props => {
+            switch(props.security) {
+                case 'second' :
+                    return '0.5vw';
+                default : 
+                    return '0';
             }
         }
     };
@@ -205,7 +240,7 @@ const Label = styled.label`
     font-size: 1vw;
 `
 const Buttondiv = styled.div`
-    margin-top: 3vw;
+    margin-top: 1vw;
     width: 100%;
     flex-direction: column;
     @media only screen and (orientation: portrait) {
@@ -215,9 +250,9 @@ const Buttondiv = styled.div`
                     props => {
                         switch(props.sign) {
                             case 'true' :
-                                return '1vw';
+                                return '0.5vw';
                             default : 
-                                return '5vw';
+                                return '3.5vw';
                         }
                     }
                 };
@@ -227,7 +262,7 @@ const Buttondiv = styled.div`
 `
 const Button = styled.button`
     cursor: pointer;
-    margin-top: 1vw;
+    margin-top: 2vw;
     width: 55%;
     height: auto;
     border: none;
@@ -266,7 +301,7 @@ const Button = styled.button`
         }
         @media only screen and (max-height: 850px) {
             @media only screen and (max-width: 500px) {
-                margin-top: 2vw;
+                margin-top: 1vw;
                 font-size: 1.5vw;
             }
         }
@@ -307,6 +342,28 @@ const Dplctcheck = styled(Button)`
 `
 const LoginDplct = styled(Button)`
     width: 25%;
+    @media only screen and (max-width: 1300px) {
+        margin-top: 0.5vw;
+    }
+    @media only screen and (max-width: 1100px) {
+        margin-top: 1.5vw;
+    }
+    @media only screen and (orientation: portrait) {
+        @media only screen and (max-width: 750px) {
+            margin-top: 1vw;
+        }
+        @media only screen and (max-width: 600px) {
+            margin-top: 0;
+            padding: 0.7vw;
+            font-size: 1.2vw;
+        }
+        @media only screen and (max-height: 850px) {
+            @media only screen and (max-width: 500px) {
+                margin-top: 0;
+                padding: 0.7vw;
+            }
+        }
+    }
 `
 
 class Main extends Component {
@@ -315,6 +372,8 @@ class Main extends Component {
         mainTag: null,
         loginTag: null,
         user: null,
+        first_security: null,
+        second_security: null,
         id: null,
         pw: null,
         number: null,
@@ -323,6 +382,7 @@ class Main extends Component {
         sign: false,
         dplctCheck: false,
         login: false,
+        findUser: false,
         newHeight: 0,
         headerHeight: 0,
         prevHeaderHeight: 0,
@@ -428,6 +488,8 @@ class Main extends Component {
     maxLengthCheck = (e) => {
         this.setState({
             [e.target.user]: e.target.value,
+            [e.target.first_security]: e.target.value,
+            [e.target.second_security]: e.target.value,
             [e.target.id]: e.target.value,
             [e.target.pw]: e.target.value,
             [e.target.number]: e.target.value,
@@ -479,35 +541,50 @@ class Main extends Component {
     }
 
     logout () {
-        document.querySelector(".loginform").style.height = (document.querySelector(".slidebody").offsetHeight / window.innerHeight) * 100 + "vh";
+        axios.post('http://localhost:8088/logout', { headers: { 'Content-Type': 'multipart/form-data;' }})
+        .then(res => { 
+            document.querySelector(".loginform").style.height = (document.querySelector(".slidebody").offsetHeight / window.innerHeight) * 100 + "vh";
 
-        this.setState({
-            id: null,
-            pw: null,
-            login: !this.state.login
-        });
-        
-        window.sessionStorage.clear();
-        console.log(sessionStorage);
-        window.location.reload();
+            this.setState({
+                id: null,
+                pw: null,
+                login: !this.state.login
+            });
+            
+            window.sessionStorage.clear();
+            console.log(sessionStorage);
+            window.location.reload();
+        })
     }
 
     sign () {
         this.setState({
-            sign: !this.state.sign,
             user: null,
+            first_security: null,
+            second_security: null,
             id: null,
             pw: null,
             number: null,
             email: null,
             gender: null
         });
+        if(this.state.sign === false && this.state.findUser === true) {
+            this.setState({
+                findUser: !this.state.findUser
+            });
+        } else if(this.state.sign === false && this.state.findUser === false) {
+            this.setState({
+                sign: !this.state.sign
+            });
+        }
     }
 
     nullCheck () {
-        const { user, id, pw, number, email, gender } = this.state;
+        const { user, first_security, second_security, id, pw, number, email, gender } = this.state;
 
-        if((user === null || user.length < 1) || 
+        if((user === null || user.length < 1) ||
+            (first_security === null || first_security.length < 1) || 
+            (second_security === null || second_security.length < 1) || 
             (id === null || id.length < 1) ||
             (pw === null || pw.length < 1) ||
             (number === null || number.length < 1) ||
@@ -552,7 +629,9 @@ class Main extends Component {
 
     completeSign () {
         let form = new FormData()
-        form.append('name', this.state.user)
+        form.append('user', this.state.user)
+        form.append('first_security', this.state.first_security)
+        form.append('second_security', this.state.second_security)
         form.append('id', this.state.id)
         form.append('pw', this.state.pw)
         form.append('number', this.state.number)
@@ -561,10 +640,39 @@ class Main extends Component {
 
         axios.post('http://localhost:8088/sign', form, { headers: { 'Content-Type': 'multipart/form-data;' }})
             .then(res => {
-                console.log('response : ', JSON.stringify(res, null, 2));
+                if(res.data === false) {
+                    alert("회원가입실패\n이미 가입된 아이디가 있습니다.")
+                } else {
+                    this.setState({ 
+                        sign: false,
+                        user: null,
+                        id: null,
+                        pw: null,
+                        number: null,
+                        email: null,
+                        gender: null
+                    });
+                    alert("회원가입 성공!")
+                }
             });
-            this.setState({ 
-                sign: false,
+    }
+
+    find() {
+        this.setState({
+            findUser: !this.state.findUser,
+        });
+    }
+
+    findUser () {
+        let form = new FormData()
+        form.append('user', this.state.user)
+        form.append('first_security', this.state.first_security)
+        form.append('second_security', this.state.second_security)
+        form.append('email', this.state.email)
+        axios.post('http://localhost:8088/find', form, { headers: { 'Content-Type': 'multipart/form-data;' }})
+        .then(res => {
+            this.setState({
+                findUser: !this.state.findUser,
                 user: null,
                 id: null,
                 pw: null,
@@ -572,11 +680,11 @@ class Main extends Component {
                 email: null,
                 gender: null
             });
-            alert("회원가입 성공!")
+        });
     }
 
     render() {
-        var { login, sign, test } = this.state;
+        var { login, sign, test, findUser } = this.state;
 
         return (
             <MainBack id = "Main_Back">
@@ -590,86 +698,126 @@ class Main extends Component {
                             })}
                         </Scroll_child>
                     </Scroll_body>
-                    { login === false && sessionStorage.length === 0 ?
+                    { findUser === true ?
                         <React.Fragment>
-                        { sign === false ?
-                            <Loginform sign = 'false' className = "loginform">
-                                <Title>
+                            <Loginform className = "loginform">
+                                <Title findUser = "true">
                                     <Logo src = { cgv_logo }/>
-                                    <Span>로그인</Span>
-                                </Title>
-                                <Inputdiv sign = 'false'>
-                                    <Logintext name = "id" placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
-                                    <Loginimg src = { id }/>
-                                </Inputdiv>
-                                <Inputdiv sign = 'false'> 
-                                    <Logintext name = "pw" placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
-                                    <Loginimg src = { pw }/>
-                                </Inputdiv>
-                                <Buttondiv>
-                                    <Button onClick = { () => this.login( this.state.id, this.state.pw ) }>로그인</Button>
-                                    <Button onClick = { () => this.sign() }>회원가입</Button>
-                                    <Button>ID/PW찾기</Button>
-                                </Buttondiv>
-                            </Loginform>
-                            : 
-                            <Loginform sign = 'true' className = "loginform">
-                                <Title>
-                                    <Logo src = { cgv_logo }/>
-                                    <Span>회원가입 { test }</Span>
+                                    <Span>ID/PW찾기</Span>
                                 </Title>
                                 <Form id = "form">
                                     <Inputdiv sign = 'true'>
                                         <Logintext name = "user" placeholder='이름을 입력하세요' type = "text" value = { this.state.user } onChange = { this.maxLengthCheck }></Logintext>
                                         <Loginimg src = { name }/>
                                     </Inputdiv>
-                                    <Inputdiv dplct = "true" sign = 'true'>
-                                        <Logintext name = "id" placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
-                                        <Dplctcheck type = "button" onClick = { () => this.dplctCheck( "아이디", this.state.id ) }>중복체크</Dplctcheck>
-                                    </Inputdiv>
                                     <Inputdiv sign = 'true'>
-                                        <Logintext name = "pw" placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
-                                        <Loginimg src = { pw }/>
-                                    </Inputdiv>
-                                    <Inputdiv sign = 'true'>
-                                        <Logintext name = "number" placeholder="전화번호를 입력하세요 ('-')는 포함X" type = "text" value = { this.state.number } onChange = { this.maxLengthCheck }></Logintext>
-                                        <Loginimg src = { phone }/>
+                                        <Logintext security = "first" name = "first_security" placeholder='주민등록번호를' type = "text" value = { this.state.first_security } onChange = { this.maxLengthCheck }></Logintext>
+                                        -
+                                        <Logintext security = "second" name = "second_security" placeholder='입력하세요' type = "text" value = { this.state.second_security } onChange = { this.maxLengthCheck }></Logintext>
+                                        <Loginimg src = { security }/>
                                     </Inputdiv>
                                     <Inputdiv sign = 'true'>
                                         <Logintext name = "email" placeholder='e-mail을 입력하세요' type = 'email' value = { this.state.email } onChange = { this.maxLengthCheck }></Logintext>
                                         <Loginimg src = { email }/>
-                                    </Inputdiv>
-                                    <Inputdiv label = 'true' sign = 'true'>
-                                            <Label for="male">남자
-                                                <Logintext label = 'true' id = "male" type = "radio" name="gender" value = "male" onChange = { this.maxLengthCheck }/>
-                                            </Label>
-                                            <Label for="female">여자
-                                                <Logintext label = 'true' id = "female" type = "radio" name="gender" value = "female" onChange = { this.maxLengthCheck }/>
-                                            </Label>
-                                    </Inputdiv>
-                                    <Buttondiv sign = 'true'>
-                                        <LoginDplct onClick = { () => this.sign() }>로그인</LoginDplct>&emsp;&emsp;
-                                        <LoginDplct type = "button" onClick = { () => this.nullCheck() }>회원가입</LoginDplct>
+                                    </Inputdiv>                                
+                                    <Buttondiv>
+                                        <Button onClick = { () => this.sign() }>로그인</Button>
+                                        <Button type = "button" onClick = { () => this.findUser() }>ID/PW찾기</Button>
                                     </Buttondiv>
                                 </Form>
                             </Loginform>
-                        }
                         </React.Fragment>
                         :
                         <React.Fragment>
-                            <Loginform className = "loginform">
-                                <Title>
-                                    <Logo src = { cgv_logo }/>
-                                    <Span>로그인</Span>
-                                </Title>
-                                <Span user = "true">{ sessionStorage.name }님 환영합니다.</Span>
-                                <Buttondiv>
-                                    <Button>MY페이지</Button>
-                                    <Button onClick = { () => this.logout() }>로그아웃</Button>
-                                </Buttondiv>
-                            </Loginform>
+                        { login === false && sessionStorage.length === 0 ?
+                            <React.Fragment>
+                            { sign === false ?
+                                <Loginform sign = 'false' className = "loginform">
+                                    <Title>
+                                        <Logo src = { cgv_logo }/>
+                                        <Span>로그인</Span>
+                                    </Title>
+                                    <Inputdiv sign = 'false'>
+                                        <Logintext name = "id" placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
+                                        <Loginimg src = { id }/>
+                                    </Inputdiv>
+                                    <Inputdiv sign = 'false'> 
+                                        <Logintext name = "pw" placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
+                                        <Loginimg src = { pw }/>
+                                    </Inputdiv>
+                                    <Buttondiv>
+                                        <Button onClick = { () => this.login( this.state.id, this.state.pw ) }>로그인</Button>
+                                        <Button onClick = { () => this.sign() }>회원가입</Button>
+                                        <Button onClick = { () => this.find() }>ID/PW찾기</Button>
+                                    </Buttondiv>
+                                </Loginform>
+                                : 
+                                <Loginform sign = 'true' className = "loginform">
+                                    <Title>
+                                        <Logo src = { cgv_logo }/>
+                                        <Span>회원가입 { test }</Span>
+                                    </Title>
+                                    <Form id = "form">
+                                        <Inputdiv sign = 'true'>
+                                            <Logintext name = "user" placeholder='이름을 입력하세요' type = "text" value = { this.state.user } onChange = { this.maxLengthCheck }></Logintext>
+                                            <Loginimg src = { name }/>
+                                        </Inputdiv>
+                                        <Inputdiv sign = 'true'>
+                                            <Logintext security = "first" name = "first_security" placeholder='주민등록번호를' type = "text" value = { this.state.first_security } onChange = { this.maxLengthCheck }></Logintext>
+                                            -
+                                            <Logintext security = "second" name = "second_security" placeholder='입력하세요' type = "text" value = { this.state.second_security } onChange = { this.maxLengthCheck }></Logintext>
+                                            <Loginimg src = { security }/>
+                                        </Inputdiv>
+                                        <Inputdiv dplct = "true" sign = 'true'>
+                                            <Logintext name = "id" placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
+                                            <Dplctcheck type = "button" onClick = { () => this.dplctCheck( "아이디", this.state.id ) }>중복체크</Dplctcheck>
+                                        </Inputdiv>
+                                        <Inputdiv sign = 'true'>
+                                            <Logintext name = "pw" placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
+                                            <Loginimg src = { pw }/>
+                                        </Inputdiv>
+                                        <Inputdiv sign = 'true'>
+                                            <Logintext name = "number" placeholder="전화번호를 입력하세요 ('-')는 포함X" type = "text" value = { this.state.number } onChange = { this.maxLengthCheck }></Logintext>
+                                            <Loginimg src = { phone }/>
+                                        </Inputdiv>
+                                        <Inputdiv sign = 'true'>
+                                            <Logintext name = "email" placeholder='e-mail을 입력하세요' type = 'email' value = { this.state.email } onChange = { this.maxLengthCheck }></Logintext>
+                                            <Loginimg src = { email }/>
+                                        </Inputdiv>
+                                        <Inputdiv label = 'true' sign = 'true'>
+                                                <Label for="male">남자
+                                                    <Logintext label = 'true' id = "male" type = "radio" name="gender" value = "male" onChange = { this.maxLengthCheck }/>
+                                                </Label>
+                                                <Label for="female">여자
+                                                    <Logintext label = 'true' id = "female" type = "radio" name="gender" value = "female" onChange = { this.maxLengthCheck }/>
+                                                </Label>
+                                        </Inputdiv>
+                                        <Buttondiv sign = 'true'>
+                                            <LoginDplct onClick = { () => this.sign() }>로그인</LoginDplct>&emsp;&emsp;
+                                            <LoginDplct type = "button" onClick = { () => this.nullCheck() }>회원가입</LoginDplct>
+                                        </Buttondiv>
+                                    </Form>
+                                </Loginform>
+                            }
+                            </React.Fragment>
+                            :
+                            <React.Fragment>
+                                <Loginform className = "loginform">
+                                    <Title>
+                                        <Logo src = { cgv_logo }/>
+                                        <Span>로그인</Span>
+                                    </Title>
+                                    <Span user = "true">{ sessionStorage.name }님 환영합니다.</Span>
+                                    <Buttondiv>
+                                        <Button>MY페이지</Button>
+                                        <Button onClick = { () => this.logout() }>로그아웃</Button>
+                                    </Buttondiv>
+                                </Loginform>
+                            </React.Fragment>
+                        }
                         </React.Fragment>
                     }
+    
                 </Login>
             </MainBack>
         )

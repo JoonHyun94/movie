@@ -7,7 +7,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 public class SeleniumTest {
- 
     public static void main(String[] args) {
         SeleniumTest selTest = new SeleniumTest();
         selTest.crawl();

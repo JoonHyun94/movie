@@ -2,6 +2,7 @@ package com.example.movie_back.dto;
 
 public class MemberVO {
     private String name;
+    private String security_number;
     private String id;
     private String pw;
     private String phone_number;
@@ -13,6 +14,13 @@ public class MemberVO {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSecurity_Number() {
+        return security_number;
+    }
+    public void setSecurity_Number(String security_number) {
+        this.security_number = security_number;
     }
 
     public String getId() {

@@ -1,8 +1,10 @@
 package com.example.movie_back.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -22,9 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MainController {
 	@Autowired
-    MovieListService movieListService;
+    private MovieListService movieListService;
     @Autowired
-    MemberService memberService;
+    private MemberService memberService;
 
     //Properties
     public static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
@@ -32,7 +34,7 @@ public class MainController {
     public String url;
     
     ArrayList<HashMap<String,String>> movieList = new ArrayList<HashMap<String,String>>();
-
+    
     @GetMapping("/list")
     public ArrayList<HashMap<String,String>> movielist() {
 
@@ -72,6 +74,12 @@ public class MainController {
         return mem;
     }
 
+    @PostMapping("/logout")
+    public void logout(HttpSession session) {
+        System.out.println("logout");
+        session.invalidate();
+    }
+
     @PostMapping("/dplct")
     public boolean dplct(HttpServletRequest req, HttpSession session, MemberVO mem) {
         boolean result;
@@ -85,9 +93,14 @@ public class MainController {
     }
 
     @PostMapping("/sign")
-    public void sign(HttpServletRequest req, MemberVO mem, Model model) {
+    public boolean sign(HttpServletRequest req, MemberVO mem, Model model) {
+        String securityNumber = null;
+        boolean result;
+
         System.out.println("-------------------------");
-        System.out.println(req.getParameter("name"));
+        System.out.println(req.getParameter("user"));
+        System.out.println(req.getParameter("first_security"));
+        System.out.println(req.getParameter("second_security"));
         System.out.println(req.getParameter("id"));
         System.out.println(req.getParameter("pw"));
         System.out.println(req.getParameter("number"));
@@ -95,13 +108,36 @@ public class MainController {
         System.out.println(req.getParameter("gender"));
         System.out.println("-------------------------");
 
-        mem.setName(req.getParameter("name"));
+        securityNumber = req.getParameter("first_security") + req.getParameter("second_security");
+
+        mem.setName(req.getParameter("user"));
+        mem.setSecurity_Number(securityNumber);
         mem.setId(req.getParameter("id"));
         mem.setPw(req.getParameter("pw"));
         mem.setPhone_Number(req.getParameter("number"));
         mem.setEmail(req.getParameter("email"));
         mem.setGender(req.getParameter("gender"));
 
-        memberService.setMember(mem);
+        result = memberService.checkSecurityNumber(mem);
+
+        System.out.println(result);
+        if(result == false) {
+            return false;
+        } else {
+            memberService.setMember(mem);
+            return true;
+        }
+    }
+
+    @PostMapping("/find")
+    public boolean findUser(HttpServletRequest req, MemberVO mem) throws MessagingException, IOException{
+        System.out.println(req.getParameter("user"));
+        System.out.println(req.getParameter("first_security"));
+        System.out.println(req.getParameter("second_security"));
+        System.out.println(req.getParameter("email"));
+
+        memberService.sendMail(req.getParameter("email"));
+        
+        return true;
     }
 }
