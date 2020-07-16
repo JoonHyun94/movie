@@ -279,7 +279,17 @@ class List extends Component {
             console.log(this.apiResult);
     }
 
-     render() {      
+    reserve() {
+        if(sessionStorage.length === 0) {
+            alert("로그인시 이용가능합니다.");
+            window.location.href = '/main';
+        } else {
+            console.log(window.location.protocol + "//" + window.location.host + "/" + window.location.pathname);
+            window.open('/reserve','movie_reserve','width=1000,height=600,location=no,status=no,scrollbars=yes');
+        }
+    }
+
+    render() {      
         const { classes } = this.props;
         const { completed } = this.state;
 
@@ -320,7 +330,7 @@ class List extends Component {
                             <Info>
                                 <Percent>예매율&emsp;{ el.percent }</Percent>
                                 <Opening>{ el.opening }</Opening>
-                                <Reserve><Reserveimg src = { ticket }/>예매하기</Reserve>
+                                <Reserve onClick = { () => this.reserve() }><Reserveimg src = { ticket }/>예매하기</Reserve>
                             </Info>
 
                             { this.state.listNum === 7 ?

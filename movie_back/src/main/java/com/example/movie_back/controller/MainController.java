@@ -55,7 +55,6 @@ public class MainController {
     @PostMapping("/login")
     public MemberVO login(HttpServletRequest req, HttpSession session, MemberVO mem) {
         boolean result;
-        String name;
         session = req.getSession();
 
         mem.setId(req.getParameter("id"));
@@ -66,7 +65,7 @@ public class MainController {
             mem = memberService.getUser(mem);
             session.setAttribute("member", mem);
         } else {
-            name = "null";
+            mem.setName("null");
         }
 
         System.out.println(session.getAttribute("member"));
@@ -130,14 +129,33 @@ public class MainController {
     }
 
     @PostMapping("/find")
-    public boolean findUser(HttpServletRequest req, MemberVO mem) throws MessagingException, IOException{
-        System.out.println(req.getParameter("user"));
-        System.out.println(req.getParameter("first_security"));
-        System.out.println(req.getParameter("second_security"));
-        System.out.println(req.getParameter("email"));
+    public MemberVO findUser(HttpServletRequest req, MemberVO mem) throws MessagingException, IOException {
+        String securityNumber = null;
+        String email;
+        String id;
+        String pw;
 
-        memberService.sendMail(req.getParameter("email"));
-        
-        return true;
+        securityNumber = req.getParameter("first_security") + req.getParameter("second_security");
+
+        mem.setName(req.getParameter("user"));
+        mem.setSecurity_Number(securityNumber);
+
+        mem = memberService.getFindUser(mem);
+
+        if(mem.getId() == "null" && mem.getPw() == "null") {
+            System.out.println("메일 전송 실패");
+
+            return mem;
+        } else {
+            System.out.println(mem.getId());
+            System.out.println(mem.getPw());
+            id = mem.getId();
+            pw = mem.getPw();
+            email = req.getParameter("email");
+
+            memberService.sendMail(id, pw, email);
+
+            return mem;
+        }
     }
 }

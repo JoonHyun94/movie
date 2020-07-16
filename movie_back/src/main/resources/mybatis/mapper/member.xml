@@ -10,12 +10,12 @@
 
 	<select id = "selectPw" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
 		SELECT NVL(MAX(pw), 'null') FROM member
-		WHERE pw = #{pw }
+		WHERE UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
 	</select>
 
 	<select id = "selectUser" parameterType="com.example.movie_back.dto.MemberVO" resultType="com.example.movie_back.dto.MemberVO">
 		SELECT * FROM member
-		WHERE id = #{id } AND pw = #{pw }
+		WHERE id = #{id } AND UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
 	</select>
 
 	<select id = "selectSecurityNumber" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
@@ -27,5 +27,10 @@
         INSERT INTO member
 		VALUES (#{id }, #{pw }, #{name }, #{security_number }, #{phone_number }, #{email }, #{gender }, SYSDATE)
 	</insert>
+
+	<select id = "selectFindUser" parameterType="com.example.movie_back.dto.MemberVO" resultType="com.example.movie_back.dto.MemberVO">
+		SELECT id, pw FROM member
+		WHERE name = #{name } AND security_number = #{security_number }
+	</select>
    
  </mapper>

@@ -15,5 +15,7 @@ public interface MemberDao {
 
     public String selectSecurityNumber(MemberVO selectSecurityNumber);
 
+    public MemberVO selectFindUser(MemberVO selectIdPw);
+
     public void insertMember(MemberVO mem);
 }

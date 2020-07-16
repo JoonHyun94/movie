@@ -18,6 +18,8 @@ public interface MemberService {
 
     public void setMember(MemberVO mem);
 
-    public void sendMail(String email) throws MessagingException, IOException;
+    public MemberVO getFindUser(MemberVO mem);
+
+    public void sendMail(String id, String pw, String email) throws MessagingException, IOException;
 
 }

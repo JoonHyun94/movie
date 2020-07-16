@@ -185,6 +185,10 @@ const Inputdiv = styled.div`
                 case 'true' :
                     return '1vw';
             }
+            switch(props.find) {
+                case 'true' :
+                    return '2.2vw';
+            }
         }
     };
     flex-direction: row;
@@ -519,7 +523,7 @@ class Main extends Component {
 
             axios.post('http://localhost:8088/login', form, { headers: { 'Content-Type': 'multipart/form-data;' }})
             .then(res => {
-                if(res.data === null) {
+                if(res.data.name === "null") {
                     alert("아이디와 비밀번호를 확인해주세요");
                 } else {
                     this.setState({
@@ -671,15 +675,22 @@ class Main extends Component {
         form.append('email', this.state.email)
         axios.post('http://localhost:8088/find', form, { headers: { 'Content-Type': 'multipart/form-data;' }})
         .then(res => {
-            this.setState({
-                findUser: !this.state.findUser,
-                user: null,
-                id: null,
-                pw: null,
-                number: null,
-                email: null,
-                gender: null
-            });
+            if(res.data.id && res.data.pw === "null") {
+                alert("가입된 회원이 아닙니다.");
+            } else {
+                alert("회원님의 메일로 아이디와 패스워드를 보냈습니다.");
+                this.setState({
+                    findUser: !this.state.findUser,
+                    user: null,
+                    id: null,
+                    pw: null,
+                    first_security: null,
+                    second_security: null,
+                    number: null,
+                    email: null,
+                    gender: null
+                });
+            }
         });
     }
 
@@ -706,17 +717,17 @@ class Main extends Component {
                                     <Span>ID/PW찾기</Span>
                                 </Title>
                                 <Form id = "form">
-                                    <Inputdiv sign = 'true'>
+                                    <Inputdiv find = 'true'>
                                         <Logintext name = "user" placeholder='이름을 입력하세요' type = "text" value = { this.state.user } onChange = { this.maxLengthCheck }></Logintext>
                                         <Loginimg src = { name }/>
                                     </Inputdiv>
-                                    <Inputdiv sign = 'true'>
+                                    <Inputdiv find = 'true'>
                                         <Logintext security = "first" name = "first_security" placeholder='주민등록번호를' type = "text" value = { this.state.first_security } onChange = { this.maxLengthCheck }></Logintext>
                                         -
                                         <Logintext security = "second" name = "second_security" placeholder='입력하세요' type = "text" value = { this.state.second_security } onChange = { this.maxLengthCheck }></Logintext>
                                         <Loginimg src = { security }/>
                                     </Inputdiv>
-                                    <Inputdiv sign = 'true'>
+                                    <Inputdiv find = 'true'>
                                         <Logintext name = "email" placeholder='e-mail을 입력하세요' type = 'email' value = { this.state.email } onChange = { this.maxLengthCheck }></Logintext>
                                         <Loginimg src = { email }/>
                                     </Inputdiv>                                
@@ -737,7 +748,7 @@ class Main extends Component {
                                         <Logo src = { cgv_logo }/>
                                         <Span>로그인</Span>
                                     </Title>
-                                    <Inputdiv sign = 'false'>
+                                    <Inputdiv find = 'false'>
                                         <Logintext name = "id" placeholder='아이디를 입력하세요' type = "text" value = { this.state.id } onChange = { this.maxLengthCheck }></Logintext>
                                         <Loginimg src = { id }/>
                                     </Inputdiv>

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 @Service
@@ -20,9 +21,11 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private MemberDao memberDao;
     @Autowired
-	JavaMailSender javaMailSender;
+	private JavaMailSender javaMailSender;
 	@Autowired
-    SpringTemplateEngine templateEngine;
+    private SpringTemplateEngine templateEngine;
+    
+    private static final String FROM_ADDRESS = "sjhs9596@gmail.com";
     
     @Override
     public boolean login(MemberVO mem){
@@ -76,17 +79,34 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void sendMail(String email) throws MessagingException, IOException {
-        MimeMessage message = javaMailSender.createMimeMessage(); 
-        MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8"); 
-        try {
-            messageHelper.setTo("slio_7@naver.com"); 
-            messageHelper.setText("test메일입니다."); 
-            messageHelper.setFrom("sjhs9596@gmail.com"); 
-            messageHelper.setSubject("test"); // 메일제목은 생략이 가능하다 
-            javaMailSender.send(message);
-        } catch(Exception e) { 
-            System.out.println(e); 
+    public MemberVO getFindUser(MemberVO mem) {
+        MemberVO resultMem;
+        resultMem = memberDao.selectFindUser(mem);
+
+        if(resultMem == null) {
+            mem.setId("null");
+            mem.setPw("null");
+        } else {
+            mem.setId(resultMem.getId());
+            mem.setPw(resultMem.getPw());
         }
+
+        return mem;
+    }
+
+    @Override
+    public void sendMail(String id, String pw, String email) throws MessagingException, IOException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        
+        //메일 제목 설정
+        helper.setSubject("ID/PW 찾기 문의 결과 입니다.");
+        //수신자 설정
+        helper.setTo(email);
+        helper.setText(("회원님의 ID는" + id + "이며" + "password는" + pw + "입니다."), true);
+        
+        //메일 보내기
+        javaMailSender.send(message);
+
     }
 }

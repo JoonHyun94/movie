@@ -3,6 +3,7 @@ import {Navbar} from "react-bootstrap";
 import {BrowserRouter as Router, Route} from "react-router-dom";
 import MainComponent from '../main/Main';
 import ListComponent from '../main/List';
+import ReserveComponent from '../reserve/Reserve';
 import cgv_logo from '../../image/cgv_logo.png';
 import styled from 'styled-components';
 
@@ -34,7 +35,10 @@ class TopMenuComponent extends Component {
 
     render() { 
         return ( 
-            <Router> 
+            <Router>
+                { window.location.href === window.location.protocol + "//" + window.location.host + "/reserve" ?
+                ""
+                :    
                 <Navbar id = "nav_var" bg="dark" variant="dark" className="nav_var" > 
                     <Logo src = { cgv_logo } href="/"></Logo>
                     <Menu_frame>
@@ -45,10 +49,11 @@ class TopMenuComponent extends Component {
                             : ""
                         }
                     </Menu_frame>
-
                 </Navbar>
-                <Route path="/main" component = { MainComponent }/> 
-                <Route path="/list" component = { ListComponent }/> 
+                }
+                <Route path="/main" component = { MainComponent }/>
+                <Route path="/list" component = { ListComponent }/>
+                <Route path="/reserve" component = { ReserveComponent }/>
             </Router>
         ) 
     } 
