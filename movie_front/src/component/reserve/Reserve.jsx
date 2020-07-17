@@ -4,85 +4,216 @@ import axios from "axios";
 import styled from 'styled-components';
 import { generateMedia } from 'styled-media-query';
 
-const ReserveMain = styled.div`
-    content: '';
+const MainBack = styled.div`
+    display: flex;
     width: 100%;
     height: 100vh;
-    background-color: #E0DFDE;
-`
-const Seat = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-`
-const Screen = styled.div`
-    margin: 0 auto;
-    margin-bottom: 5vw;
-    width: 80%;
-    height: 20%;
-    background-color: #78A9AD;
-    border-radius: 5px;
-`
-const Seat_pt = styled.div`
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-`
-var Seat_div = styled.div`
-    display: flex;
-    margin-bottom: 1vw;
-    border: 1px solid red;
-    width: 5%;
-    height: 100%;
     justify-content: center;
     align-items: center;
 `
-var Seat_div2 = styled.div`
-    background-color: transparent !important;
-    width: 5%;
-    height: 5%;
+const ReserveBody = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    width: 60%;
+    height: 80%;
+    background-color: #F9F5EA;
+    border-radius: 5px;
 `
-
-//좌석정보 초기값(0 : 통로, 1 : 예약가능 좌석, 2 : 예약완료 좌석) 
-var Seats = [
-    [1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1]
-];
+const ScrollBody = styled.div`
+    height: 95%;
+    overflow-y: scroll;
+    -ms-overflow-style: none; // IE에서 스크롤바 감춤
+    &::-webkit-scrollbar { 
+      display: none !important; // 윈도우 크롬 등
+    }
+`
+const Title = styled.div`
+    width: 100%;
+    background-color: #504E48;
+    color: white;
+    border-radius: ${ 
+        props => {
+            switch(props.border) {
+                case 'movie' :
+                    return '5px 0 0 0';
+                case 'time' :
+                    return '0 5px 0 0';
+                default : 
+                    return '0 0 0 0';
+            }
+        }
+    };
+`
+const Grade = styled.div`
+    width: 2vw;
+    height: 2vw;
+    margin: 0.3vw;
+    border-radius: 50%;
+    background-color: ${ 
+        props => {
+            switch(props.grade) {
+                case '15' :
+                    return 'orange';
+                case '12' :
+                    return 'blue';
+                case '전체' :
+                    return 'green';
+                case '청소' : 
+                    return 'red';
+                case '미정' :
+                    return 'gray';
+            }
+        }
+    };
+    font-size: ${ 
+        props => {
+            switch(props.grade) {
+                case '전체' :
+                case '청소' :
+                case '미정' :
+                    return '0.7vw';
+                default : 
+                    return '0.8vw';
+            }
+        }
+    };
+    font-weight: bolder;
+    color: white;
+    white-space:nowrap;
+    line-height: 2vw
+`
+const MovieTitle = styled.div`
+    width: 80%;
+    height: 2vw;
+    margin: 0.3vw;
+    font-size: 1.2vw;
+    font-weight: bolder;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: justify;
+    line-height: 2vw;
+`
+const MovieBody = styled.div`
+    display: flex;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1vw;
+`
+const Movie = styled.div`
+    width: 25%;
+    height: 100%;
+    background-color: transparent !important;
+`
+const Theater = styled.div`
+    width: 40%;
+    height: 100%;
+    background-color: transparent !important;
+    border-left: 1px solid gray;
+`
+const Date = styled.div`
+    width: 10%;
+    height: 100%;
+    background-color: transparent !important;
+    border-left: 1px solid gray;
+`
+const Time = styled.div`
+    width: 25%;
+    height: 100%;
+    background-color: transparent !important;
+    border-left: 1px solid gray;
+`
 
 class Reserve extends Component {
     state = {
-        inc: 1,
+        apiResult : [],
+        newHeight: 0,
+        headerHeight: 0,
+        prevHeaderHeight: 0,
+        mainTag: null
     }
+
+    componentDidMount() {
+        this.state.prevHeaderHeight = document.querySelector(".nav_var").offsetHeight;
+        this.state.newHeight = 100 - ((this.state.prevHeaderHeight) / (window.innerHeight) * 100);
+        this.state.mainTag = document.querySelector("[id = 'Main_Back']");
+        this.state.mainTag.style.height = this.state.newHeight + "vh";
+        
+        this.getApi();
+        setInterval(this.onHeight, 10);
+    };
+
+    getApi = () => {
+        axios.get('http://localhost:8088/reserve') 
+            .then(res => {
+                console.log(res.data);
+                const reserveList = []; // 결과값을 받아올 배열
+                if(res.data && Array.isArray(res.data)) {
+                    console.log(res.data.title);
+                    res.data.forEach(el => { // 결과 수 만큼 반복
+                        reserveList.push({ // reserveList에 결과의 원하는 부분을 저장
+                            title: el.title,
+                            grade: el.grade,
+                        })
+                        console.log(reserveList);
+                    })
+                }
+                 this.setState({
+                    apiResult: reserveList, // state에 저장
+                    nullCheck: 1
+                });
+            }) 
+            .catch(res => console.log(res))
+            console.log(this.apiResult);
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if(this.state.prevHeaderHeight != this.state.headerHeight) {
+            this.setState({ 
+                prevHeaderHeight: this.state.headerHeight
+            });
+
+            this.state.prevHeaderHeight = document.querySelector(".nav_var").offsetHeight;
+            this.state.newHeight = 100 - ((this.state.prevHeaderHeight) / (window.innerHeight) * 100);
+            this.state.mainTag = document.querySelector("[id = 'Main_Back']");
+            this.state.mainTag.style.height = this.state.newHeight + "vh";
+        }
+        return true;
+    };
+
+    onHeight = () => {
+        const hdHeight = document.querySelector(".nav_var").offsetHeight;
+        this.setState({ 
+            headerHeight: hdHeight,
+        });
+    };
 
     render() {
         return(
-            <ReserveMain>
-                <Seat>
-                    <Screen>Screen</Screen>
-                    { Seats.map(s => {
-                        return <Seat_pt>
-                            {s.map(i => {
-                                return <React.Fragment>
-                                    { i === 1 ?
-                                        <Seat_div>{ this.state.inc++ }</Seat_div>
-                                        : <Seat_div2></Seat_div2>
-                                    }
-                                    </React.Fragment>
-                            })}
-                        </Seat_pt>
-                    })}
-                </Seat>
-            </ReserveMain>
+            <MainBack id = "Main_Back">
+                <ReserveBody>
+                    <Movie>
+                        <Title border = "movie">영화</Title>
+                            <ScrollBody>
+                                { this.state.apiResult.map((el, index) => {
+                                    return <MovieBody key = { index }>
+                                        <Grade grade = { el.grade }>{ el.grade === '청소' ? '청불' : el.grade }</Grade>
+                                        <MovieTitle>{ el.title }</MovieTitle>
+                                    </MovieBody>
+                                })}
+                            </ScrollBody>
+                    </Movie>
+                    <Theater>
+                        <Title>극장</Title>
+                    </Theater>
+                    <Date>
+                        <Title>날짜</Title>
+                    </Date>
+                    <Time>
+                        <Title border = "time">시간</Title>
+                    </Time>
+                </ReserveBody>
+            </MainBack>
         )
     }
 }

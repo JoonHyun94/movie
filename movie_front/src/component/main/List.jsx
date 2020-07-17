@@ -285,7 +285,8 @@ class List extends Component {
             window.location.href = '/main';
         } else {
             console.log(window.location.protocol + "//" + window.location.host + "/" + window.location.pathname);
-            window.open('/reserve','movie_reserve','width=1000,height=600,location=no,status=no,scrollbars=yes');
+            window.location.href = '/reserve';
+            // window.open('/reserve','movie_reserve','width=1000,height=600,location=no,status=no,scrollbars=yes');
         }
     }
 

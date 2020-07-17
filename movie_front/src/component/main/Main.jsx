@@ -511,6 +511,13 @@ class Main extends Component {
         });
     }
 
+    // 로그인 enter키
+    onKeyDown (id, pw) {
+        if (window.event.keyCode == 13) { 
+            this.login(id, pw);
+        }
+    }
+
     login (id, pw) {
         if(id === null || id.length < 1) {
             alert("아이디를 입력해주세요");
@@ -753,7 +760,7 @@ class Main extends Component {
                                         <Loginimg src = { id }/>
                                     </Inputdiv>
                                     <Inputdiv sign = 'false'> 
-                                        <Logintext name = "pw" placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
+                                        <Logintext onKeyDown = { () => this.onKeyDown( this.state.id, this.state.pw ) } name = "pw" placeholder='비밀번호를 입력하세요' type = "password" value = { this.state.pw } onChange = { this.maxLengthCheck }></Logintext>
                                         <Loginimg src = { pw }/>
                                     </Inputdiv>
                                     <Buttondiv>
