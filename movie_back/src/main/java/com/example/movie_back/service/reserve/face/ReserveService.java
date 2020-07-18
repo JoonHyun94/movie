@@ -9,6 +9,6 @@ public interface ReserveService {
 
     public ArrayList<HashMap<String,String>> getReserveList(String url);
 
-    public ArrayList<HashMap<String,String>> getTheaterName();
+    public ArrayList<ArrayList<String>> getTheaterName();
 
 }

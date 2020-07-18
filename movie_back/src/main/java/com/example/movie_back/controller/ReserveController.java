@@ -8,6 +8,7 @@ import com.example.movie_back.service.reserve.face.ReserveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // CrossWeb 설정 -> 허용 주소
@@ -23,17 +24,23 @@ public class ReserveController {
     public String url;
 
     ArrayList<HashMap<String,String>> reserveList = new ArrayList<HashMap<String,String>>();
-    ArrayList<HashMap<String,String>> theaterName = new ArrayList<HashMap<String,String>>();
-    ArrayList<HashMap<String,String>> theaterList = new ArrayList<HashMap<String,String>>();
+    ArrayList<ArrayList<String>> theaterName = new ArrayList<ArrayList<String>>();
 
     @GetMapping("/reserve")
     public ArrayList<HashMap<String,String>> reservelist() {
         url = reserveService.Selenium(WEB_DRIVER_ID, WEB_DRIVER_PATH);
         
         reserveList = reserveService.getReserveList(url);
+
+        return reserveList;
+    }
+
+    @PostMapping("/getTheater")
+    public ArrayList<ArrayList<String>> getTheater() {
         theaterName = reserveService.getTheaterName();
 
-        System.out.println(theaterList);
-        return reserveList;
+        System.out.println(theaterName);
+
+        return theaterName;
     }
 } 

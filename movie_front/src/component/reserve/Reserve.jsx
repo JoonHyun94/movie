@@ -45,8 +45,8 @@ const Title = styled.div`
     };
 `
 const Grade = styled.div`
-    width: 2vw;
-    height: 2vw;
+    width: 1.5vw;
+    height: 1.5vw;
     margin: 0.3vw;
     border-radius: 50%;
     background-color: ${ 
@@ -71,34 +71,54 @@ const Grade = styled.div`
                 case '전체' :
                 case '청소' :
                 case '미정' :
-                    return '0.7vw';
+                    return '0.5vw';
                 default : 
-                    return '0.8vw';
+                    return '0.6vw';
             }
         }
     };
     font-weight: bolder;
     color: white;
     white-space:nowrap;
-    line-height: 2vw
+    line-height: 1.5vw
 `
 const MovieTitle = styled.div`
     width: 80%;
-    height: 2vw;
+    height: 1.5vw;
     margin: 0.3vw;
-    font-size: 1.2vw;
+    font-size: 0.8vw;
     font-weight: bolder;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: justify;
-    line-height: 2vw;
+    line-height: 1.5vw;
 `
 const MovieBody = styled.div`
     display: flex;
     width: 100%;
     height: auto;
     margin-bottom: 1vw;
+`
+const TheaterBody = styled.div`
+    display: flex;
+    flex-wrap: row;
+`
+const AreaBody = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+`
+const Area = styled.div`
+    border: 1px solid gray;
+`
+const TheaterListBody = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+`
+const TheaterList = styled.div`
+    border: 1px solid gray;
 `
 const Movie = styled.div`
     width: 25%;
@@ -126,7 +146,8 @@ const Time = styled.div`
 
 class Reserve extends Component {
     state = {
-        apiResult : [],
+        apiResult: [],
+        theaterResult: [],
         newHeight: 0,
         headerHeight: 0,
         prevHeaderHeight: 0,
@@ -160,7 +181,6 @@ class Reserve extends Component {
                 }
                  this.setState({
                     apiResult: reserveList, // state에 저장
-                    nullCheck: 1
                 });
             }) 
             .catch(res => console.log(res))
@@ -188,6 +208,47 @@ class Reserve extends Component {
         });
     };
 
+    getTheater (index) {    
+        var selectDoc = document.querySelectorAll(".moviebody");
+
+        for(var i = 0; i < selectDoc.length; i++) {
+            if(i === index) {
+                selectDoc[index].style.backgroundColor = 'black';
+                selectDoc[index].style.color = 'white';
+            } else {
+                selectDoc[i].style.backgroundColor = 'transparent';
+                selectDoc[i].style.color = 'black';
+            }
+        }
+
+        axios.post('http://localhost:8088/getTheater') 
+        .then(res => {
+            console.log(res.data[0]);
+            const theaterList = []; // 결과값을 받아올 배열
+            if(res.data && Array.isArray(res.data)) {
+                // res.data.forEach(el => { // 결과 수 만큼 반복
+                    // theaterList.push({ // reserveList에 결과의 원하는 부분을 저장
+                    //     area: el.area,
+                    // })
+                    // theaterList = res.data;
+                    // console.log(theaterList);
+                    // console.log(el)
+                // })
+
+                for(var i = 0; i < res.data.length; i++) {
+                    theaterList[i] = res.data[i];
+                }
+                // for(var i = 0; i < theaterList.keySet(); i++) {
+                //     console.log("ss");
+                // }
+                console.log(theaterList[0]);
+                this.setState({
+                    theaterResult: theaterList, // state에 저장
+                });
+            }
+        });
+    }
+
     render() {
         return(
             <MainBack id = "Main_Back">
@@ -196,7 +257,7 @@ class Reserve extends Component {
                         <Title border = "movie">영화</Title>
                             <ScrollBody>
                                 { this.state.apiResult.map((el, index) => {
-                                    return <MovieBody key = { index }>
+                                    return <MovieBody className = "moviebody" key = { index } onClick = { () => this.getTheater(index) }>
                                         <Grade grade = { el.grade }>{ el.grade === '청소' ? '청불' : el.grade }</Grade>
                                         <MovieTitle>{ el.title }</MovieTitle>
                                     </MovieBody>
@@ -205,6 +266,20 @@ class Reserve extends Component {
                     </Movie>
                     <Theater>
                         <Title>극장</Title>
+                        { this.state.theaterResult.map((el, index) => {
+                            return <TheaterBody>
+                                <AreaBody>
+                                    <Area key = { index }>
+                                        { el[0] }
+                                    </Area>
+                                </AreaBody>
+                                <TheaterListBody>
+                                { this.state.theaterResult[index].map((i, j) => {
+                                    return <TheaterList key = { j }>{ i }</TheaterList> 
+                                })}
+                                </TheaterListBody>
+                            </TheaterBody>
+                        })}
                     </Theater>
                     <Date>
                         <Title>날짜</Title>

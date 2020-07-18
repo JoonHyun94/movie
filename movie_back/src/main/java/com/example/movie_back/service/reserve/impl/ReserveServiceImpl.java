@@ -96,9 +96,9 @@ public class ReserveServiceImpl implements ReserveService{
     }
 
     @Override
-    public ArrayList<HashMap<String,String>> getTheaterName() {
-        HashMap<String,String> theaterMap = new HashMap<String,String>();
-        ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+    public ArrayList<ArrayList<String>> getTheaterName() {
+        ArrayList<String> theaterMap = new ArrayList<String>();
+        ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
         String url = "http://ticket.cgv.co.kr/Reservation/Reservation.aspx?MOVIE_CD=&MOVIE_CD_GROUP=&PLAY_YMD=&THEATER_CD=&PLAY_NUM=&PLAY_START_TM=&AREA_CD=&SCREEN_CD=&THIRD_ITEM="; //크롤링할 url지정
         Document doc = null;        //Document에는 페이지의 전체 소스가 저장된다
         
@@ -122,34 +122,39 @@ public class ReserveServiceImpl implements ReserveService{
         String name;
         String count;
         String theater;
-        int cnt;
+        int cnt = 0;
+        String[] stringCount = new String[elcount.size()];
+        int[] arrayCount = new int[elcount.size()];
 
-		for(int i = 0; i < 1; i++) {
-			theaterMap = new HashMap<String,String>();
-            name = elname.get(i).text();
+        for(int i = 0; i <elcount.size()-2; i++) {
             count = elcount.get(i).text();
 
-            // count = count.replaceAll("\\(", "");
-            // count = count.replaceAll("\\)", "");
+            count = count.replaceAll("\\(", "");
+            count = count.replaceAll("\\)", "");
+            
+            stringCount[i] = count;
 
-            // cnt = Integer.parseInt(count);
-
-            // System.out.println(cnt);
-
-            for(int j = 0; j < 20; j++) {
-                theater = eltheater.get(j).text();
-                theaterMap.put("name", name);
-                theaterMap.put("theater" + j, theater);
-
-                System.out.println(theater);
-            }
-            System.out.println("---------------------------------------");
-
-
-            list.add(theaterMap);
+            arrayCount[i] = Integer.parseInt(stringCount[i]);
         }
 
-        
+		for(int i = 0; i < elname.size()-2; i++) {
+            theaterMap = new ArrayList<String>();
+            name = elname.get(i).text();
+
+            theaterMap.add("00" + name);
+
+            for(int j = 1; j < arrayCount[i] + 1; j++) {
+                theater = eltheater.get(cnt).text();
+
+                theaterMap.add(theater);
+    
+                cnt++;
+            }
+
+            list.add(theaterMap);
+
+        }
+
         System.out.println(list);
         
         return list;
