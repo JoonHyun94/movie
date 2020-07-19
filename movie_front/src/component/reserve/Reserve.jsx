@@ -20,7 +20,7 @@ const ReserveBody = styled.div`
     border-radius: 5px;
 `
 const ScrollBody = styled.div`
-    height: 95%;
+    height: 70vh;
     overflow-y: scroll;
     -ms-overflow-style: none; // IE에서 스크롤바 감춤
     &::-webkit-scrollbar { 
@@ -107,18 +107,28 @@ const TheaterBody = styled.div`
 const AreaBody = styled.div`
     display: flex;
     flex-direction: column;
-    width: 30%;
+    width: 50%;
 `
 const Area = styled.div`
-    border: 1px solid gray;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 0.5vw;
+    padding: 0.5vw;
+    font-size: 1vw;
+    background-color: #DCDCDC;
 `
 const TheaterListBody = styled.div`
     display: flex;
     flex-direction: column;
-    width: 70%;
+    width: 50%;
+    display: none;
 `
 const TheaterList = styled.div`
-    border: 1px solid gray;
+    margin-bottom: 0.7vw;
+    font-size: 1.2vw;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: justify;
 `
 const Movie = styled.div`
     width: 25%;
@@ -151,7 +161,9 @@ class Reserve extends Component {
         newHeight: 0,
         headerHeight: 0,
         prevHeaderHeight: 0,
-        mainTag: null
+        mainTag: null,
+        selectArea: 0,
+        subStringArea: null
     }
 
     componentDidMount() {
@@ -226,27 +238,32 @@ class Reserve extends Component {
             console.log(res.data[0]);
             const theaterList = []; // 결과값을 받아올 배열
             if(res.data && Array.isArray(res.data)) {
-                // res.data.forEach(el => { // 결과 수 만큼 반복
-                    // theaterList.push({ // reserveList에 결과의 원하는 부분을 저장
-                    //     area: el.area,
-                    // })
-                    // theaterList = res.data;
-                    // console.log(theaterList);
-                    // console.log(el)
-                // })
-
                 for(var i = 0; i < res.data.length; i++) {
                     theaterList[i] = res.data[i];
                 }
-                // for(var i = 0; i < theaterList.keySet(); i++) {
-                //     console.log("ss");
-                // }
+
                 console.log(theaterList[0]);
                 this.setState({
                     theaterResult: theaterList, // state에 저장
                 });
             }
         });
+    }
+
+    selectArea (index) {
+        var selectDoc = document.querySelectorAll(".area");
+
+        for(var i = 0; i < selectDoc.length; i++) {
+            if(i === index) {
+                selectDoc[index].style.backgroundColor = 'transparent';
+            } else {
+                selectDoc[i].style.backgroundColor = '#DCDCDC';
+                selectDoc[i].style.color = 'black';
+            }
+        }
+
+        this.state.selectArea = index;
+        document.getElementById('theaterbody').style.display = 'block'
     }
 
     render() {
@@ -266,21 +283,34 @@ class Reserve extends Component {
                     </Movie>
                     <Theater>
                         <Title>극장</Title>
-                        { this.state.theaterResult.map((el, index) => {
-                            return <TheaterBody>
-                                <AreaBody>
-                                    <Area key = { index }>
-                                        { el[0] }
-                                    </Area>
-                                </AreaBody>
-                                <TheaterListBody>
-                                { this.state.theaterResult[index].map((i, j) => {
-                                    return <TheaterList key = { j }>{ i }</TheaterList> 
+                        <TheaterBody>
+                            <AreaBody>
+                            { this.state.theaterResult.map((el, index) => {
+                                return <Area key = { index } className = "area" onClick = { () => this.selectArea(index) }>
+                                            { el[0].substr(2) }({ this.state.theaterResult[index].length })
+                                        </Area>
+                                    
+                            })}
+                            </AreaBody>
+                            <TheaterListBody id = "theaterbody">
+                                <ScrollBody>
+                                { this.state.theaterResult.map((el, index) => {
+                                    if(this.state.selectArea === index) {
+                                        return <React.Fragment>
+                                        { this.state.theaterResult[index].map((i, j) => {
+                                            if(j >= 1) {
+                                                return <TheaterList key = { j } id = "theaterlist">
+                                                    { i }
+                                                </TheaterList> 
+                                            }
+                                        })}
+                                        </React.Fragment>
+                                    }
                                 })}
-                                </TheaterListBody>
-                            </TheaterBody>
-                        })}
-                    </Theater>
+                                </ScrollBody>
+                            </TheaterListBody>
+                        </TheaterBody>
+                        </Theater>
                     <Date>
                         <Title>날짜</Title>
                     </Date>

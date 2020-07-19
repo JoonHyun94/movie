@@ -105,7 +105,7 @@ public class ReserveServiceImpl implements ReserveService{
 		try {
             driver.get(url);
             
-            Thread.sleep(500);
+            Thread.sleep(1000);
 		} catch (Exception e) {
             e.printStackTrace();
 		}
@@ -116,8 +116,8 @@ public class ReserveServiceImpl implements ReserveService{
         Elements elcount = doc.select(".theater-select .theater-list .theater-area-list > ul > li > a .count");    
         Elements eltheater = doc.select("#ticket .section-theater .col-body .theater-select .theater-list .area_theater_list ul li a");    
 
-        // System.out.println(elname);
-        // System.out.println(eltheater);
+        System.out.println(elname);
+        System.out.println(eltheater);
 
         String name;
         String count;
