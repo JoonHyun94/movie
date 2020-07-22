@@ -60,7 +60,7 @@ const Title = styled.div`
     border-radius: ${ 
         props => {
             switch(props.border) {
-                case 'movie' :
+                case 'theater' :
                     return '5px 0 0 0';
                 case 'time' :
                     return '0 5px 0 0';
@@ -225,12 +225,12 @@ const Movie = styled.div`
     width: 25%;
     height: 100%;
     background-color: transparent !important;
+    border-left: 1px solid gray;
 `
 const Theater = styled.div`
     width: 30%;
     height: 100%;
     background-color: transparent !important;
-    border-left: 1px solid gray;
 `
 const Date = styled.div`
     width: 15%;
@@ -265,6 +265,9 @@ class Reserve extends Component {
         selectArea: 0,
         subStringArea: null,
         dateResult: [],
+        selectAreaNo: null,
+        selectTheaterNo: null,
+        selectDate: null
     }
 
     componentDidMount() {
@@ -305,23 +308,21 @@ class Reserve extends Component {
     getApi = () => {
         axios.get('http://localhost:8088/reserve') 
             .then(res => {
-                console.log(res.data);
-                const reserveList = []; // 결과값을 받아올 배열
+                console.log(res.data[0]);
+                const theaterList = []; // 결과값을 받아올 배열
                 if(res.data && Array.isArray(res.data)) {
-                    console.log(res.data.title);
-                    res.data.forEach(el => { // 결과 수 만큼 반복
-                        reserveList.push({ // reserveList에 결과의 원하는 부분을 저장
-                            title: el.title,
-                            grade: el.grade,
-                        })
-                        console.log(reserveList);
-                    })
+                    for(var i = 0; i < res.data.length; i++) {
+                        theaterList[i] = res.data[i];
+                    }
+
+                    console.log(theaterList[0]);
+
+                    this.setState({
+                        theaterResult: theaterList, // state에 저장
+                        nullCheck: 1
+                    });
                 }
-                 this.setState({
-                    apiResult: reserveList, // state에 저장
-                    nullCheck: 1,
-                });
-            }) 
+            })
             .catch(res => console.log(res))
             console.log(this.apiResult);
     }
@@ -366,26 +367,9 @@ class Reserve extends Component {
             selectArea[i].style.color = 'black';
             document.getElementById('theaterbody').style.display = 'none'
         }
-
-        axios.post('http://localhost:8088/getTheater') 
-        .then(res => {
-            console.log(res.data[0]);
-            const theaterList = []; // 결과값을 받아올 배열
-            if(res.data && Array.isArray(res.data)) {
-                for(var i = 0; i < res.data.length; i++) {
-                    theaterList[i] = res.data[i];
-                }
-
-                console.log(theaterList[0]);
-
-                this.setState({
-                    theaterResult: theaterList, // state에 저장
-                });
-            }
-        });
     }
 
-    selectArea (index) {
+    selectArea (index, area) {
         var selectDoc = document.querySelectorAll(".area");
 
         for(var i = 0; i < selectDoc.length; i++) {
@@ -401,10 +385,11 @@ class Reserve extends Component {
         }
 
         this.state.selectArea = index;
+        this.state.selectAreaNo = area;
         document.getElementById('theaterbody').style.display = 'block'
     }
 
-    selectDate (index) {
+    selectDate (index, theater) {
         var selectDate = document.querySelectorAll(".theaterlist");
 
         for(var i = 0; i < selectDate.length; i++) {
@@ -454,8 +439,44 @@ class Reserve extends Component {
             this.state.dateResult[i+1] = dateArray;
         }
 
+        this.state.selectTheaterNo = theater;
         console.log(this.state.dateResult);
 
+    }
+
+    getMovie (date) {
+        var subDate = null;
+        subDate = date.replace(/-/gi, "");
+        subDate = subDate.substring(0, 8);
+
+        this.state.selectDate = subDate;
+
+        let form = new FormData()
+        form.append('areano', this.state.selectAreaNo)
+        form.append('theaterno', this.state.selectTheaterNo)
+        form.append('date', this.state.selectDate)
+
+        axios.post('http://localhost:8088/getMovie', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
+        .then(res => {
+            console.log(res.data);
+            const reserveList = []; // 결과값을 받아올 배열
+            if(res.data && Array.isArray(res.data)) {
+                console.log(res.data.title);
+                res.data.forEach(el => { // 결과 수 만큼 반복
+                    reserveList.push({ // reserveList에 결과의 원하는 부분을 저장
+                        title: el.title,
+                        grade: el.grade,
+                    })
+                    console.log(reserveList);
+                })
+            }
+             this.setState({
+                apiResult: reserveList, // state에 저장
+                nullCheck: 1,
+            });
+        }) 
+        .catch(res => console.log(res))
+        console.log(this.apiResult);
     }
 
     render() {
@@ -482,23 +503,12 @@ class Reserve extends Component {
                 :
                 <MainBack id = "Main_Back">
                     <ReserveBody>
-                        <Movie>
-                            <Title border = "movie">영화</Title>
-                                <ScrollBody>
-                                    { this.state.apiResult.map((el, index) => {
-                                        return <MovieBody id = "moviebody" className = "moviebody" key = { index } onClick = { () => this.getTheater(index) }>
-                                            <Grade grade = { el.grade }>{ el.grade === '청소' ? '청불' : el.grade }</Grade>
-                                            <MovieTitle>{ el.title }</MovieTitle>
-                                        </MovieBody>
-                                    })}
-                                </ScrollBody>
-                        </Movie>
                         <Theater>
-                            <Title>극장</Title>
+                            <Title border = "theater">극장</Title>
                             <TheaterBody>
                                 <AreaBody id = "areabody">
                                 { this.state.theaterResult.map((el, index) => {
-                                    return <Area key = { index } className = "area" onClick = { () => this.selectArea(index) }>
+                                    return <Area key = { index } className = "area" onClick = { () => this.selectArea(index, el[1]) }>
                                                 { el[0].substr(2) }({ this.state.theaterResult[index].length })
                                             </Area>
                                 })}
@@ -509,9 +519,9 @@ class Reserve extends Component {
                                         if(this.state.selectArea === index) {
                                             return <React.Fragment>
                                             { this.state.theaterResult[index].map((i, j) => {
-                                                if(j >= 1) {
-                                                    return <TheaterList key = { j } id = "theaterlist" className = "theaterlist" onClick = { () => this.selectDate(j-1) }>
-                                                        { i }
+                                                if(j >= 2) {
+                                                    return <TheaterList key = { j } id = "theaterlist" className = "theaterlist" onClick = { () => this.selectDate(j-1, i.substring(i.indexOf("=") + 1, i.length)) }>
+                                                        { i.substring(0, i.indexOf("=")) }
                                                     </TheaterList> 
                                                 }
                                             })}
@@ -521,7 +531,7 @@ class Reserve extends Component {
                                     </ScrollBody>
                                 </TheaterListBody>
                             </TheaterBody>
-                            </Theater>
+                        </Theater>
                         <Date>
                             <Title>날짜</Title>
                             <DateBody id = "datebody">
@@ -540,12 +550,12 @@ class Reserve extends Component {
                                                 i.substring(8, 10) === '07' || 
                                                 i.substring(8, 10) === '08' || 
                                                 i.substring(8, 10) === '09') {
-                                                return <DateListBody key = { j }>
+                                                return <DateListBody key = { j } onClick = { () => this.getMovie(el[j]) }>
                                                             <DayWeek week = { i[11] }>{ i[11] }</DayWeek>
                                                             <Day week = { i[11] }>{ i.substring(9, 10) }</Day>
                                                         </DateListBody>
                                             } else {
-                                                return <DateListBody key = { j }>
+                                                return <DateListBody key = { j } onClick = { () => this.getMovie(el[j]) }>
                                                             <DayWeek week = { i[11] }>{ i[11] }</DayWeek>
                                                             <Day week = { i[11] }>{ i.substring(8, 10) }</Day>
                                                         </DateListBody>
@@ -556,6 +566,17 @@ class Reserve extends Component {
                                 </ScrollBody>
                             </DateBody>
                         </Date>
+                        <Movie>
+                            <Title border = "movie">영화</Title>
+                            <ScrollBody>
+                                { this.state.apiResult.map((el, index) => {
+                                    return <MovieBody id = "moviebody" className = "moviebody" key = { index } onClick = { () => this.getTheater(index) }>
+                                        <Grade grade = { el.grade }>{ el.grade === '청소' ? '청불' : el.grade }</Grade>
+                                        <MovieTitle>{ el.title }</MovieTitle>
+                                    </MovieBody>
+                                })}
+                            </ScrollBody>
+                        </Movie>
                         <Time>
                             <Title border = "time">시간</Title>
                         </Time>
