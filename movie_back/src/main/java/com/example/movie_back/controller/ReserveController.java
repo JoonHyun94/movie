@@ -26,8 +26,9 @@ public class ReserveController {
     public static final String WEB_DRIVER_PATH = "C:/Program Files/selenium/chromedriver_win32/chromedriver.exe";
     public String url;
 
-    ArrayList<HashMap<String,String>> reserveList = new ArrayList<HashMap<String,String>>();
     ArrayList<ArrayList<String>> theaterName = new ArrayList<ArrayList<String>>();
+    ArrayList<HashMap<String,String>> movieList = new ArrayList<HashMap<String,String>>();
+    ArrayList<HashMap<String,String>> movieTimeList = new ArrayList<HashMap<String,String>>();
 
     @GetMapping("/reserve")
     public ArrayList<ArrayList<String>> getTheater() {
@@ -41,7 +42,7 @@ public class ReserveController {
     }
 
     @PostMapping("/getMovie")
-    public ArrayList<HashMap<String,String>> reservelist(HttpServletRequest req, Model model) {
+    public ArrayList<HashMap<String,String>> getMovie(HttpServletRequest req, Model model) {
         System.out.println(req.getParameter("areano"));
         System.out.println(req.getParameter("theaterno"));
         System.out.println(req.getParameter("date"));
@@ -53,11 +54,34 @@ public class ReserveController {
         model.addAttribute("areano", areano);
         model.addAttribute("theaterno", theaterno);
         model.addAttribute("date", date);
-
-        // url = reserveService.Selenium(WEB_DRIVER_ID, WEB_DRIVER_PATH);
         
-        reserveList = reserveService.getMovieList(model);
+        movieList = reserveService.getMovieList(model);
 
-        return reserveList;
+        System.out.println(movieList);
+
+        return movieList;
+    }
+
+    @PostMapping("/getMovieTime")
+    public ArrayList<HashMap<String,String>> getMovieTime(HttpServletRequest req, Model model) {
+        System.out.println(req.getParameter("areano"));
+        System.out.println(req.getParameter("theaterno"));
+        System.out.println(req.getParameter("date"));
+        System.out.println(req.getParameter("title"));
+
+        String areano = req.getParameter("areano");
+        String theaterno = req.getParameter("theaterno");
+        String date = req.getParameter("date");
+        String title = req.getParameter("title");
+
+        model.addAttribute("areano", areano);
+        model.addAttribute("theaterno", theaterno);
+        model.addAttribute("date", date);
+        model.addAttribute("title", title);
+
+        movieTimeList = reserveService.getMovieTimeList(model);
+
+        System.out.println(movieTimeList);
+        return movieTimeList;
     }
 } 

@@ -13,4 +13,6 @@ public interface ReserveService {
 
     public ArrayList<ArrayList<String>> getTheaterName(String url);
 
+    public ArrayList<HashMap<String,String>> getMovieTimeList(Model model);
+
 }

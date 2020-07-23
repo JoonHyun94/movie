@@ -124,6 +124,7 @@ const MovieBody = styled.div`
     display: flex;
     width: 100%;
     height: auto;
+    margin-top: 0.5vw;
     margin-bottom: 1vw;
     cursor: pointer;
     color: #666;
@@ -168,6 +169,7 @@ const TheaterList = styled.div`
     color: #666;
 `
 const DateBody = styled.div`
+    margin-top: 0.5vw;
     margin-bottom: 1vw;
     display: flex;
     flex-direction: column;
@@ -186,6 +188,7 @@ const DateListBody = styled.div`
     display: flex;
     flex-wrap: row;
     width: 50%;
+    cursor: pointer;
 `
 const DayWeek = styled.div`
     font-size: 0.7vw;
@@ -221,8 +224,28 @@ const Day = styled.div`
         }
     };
 `
+const TimeBody = styled(MovieBody)`
+    flex-wrap: wrap;
+`
+const Kind = styled.div`
+    margin-bottom: 1vw;
+    margin-left: 1vw;
+    width: 100%;
+    font-size: 0.7vw;
+    text-align: justify;
+`
+const Floor = styled.div`
+    margin-left: 1vw;
+    width: 100%;
+    font-size: 1vw;
+    text-align: justify;
+`
+const Timetable = styled.div`
+    border: 1px solid black;
+    font-size: 0.7vw;
+`
 const Movie = styled.div`
-    width: 25%;
+    width: 15%;
     height: 100%;
     background-color: transparent !important;
     border-left: 1px solid gray;
@@ -239,7 +262,7 @@ const Date = styled.div`
     border-left: 1px solid gray;
 `
 const Time = styled.div`
-    width: 30%;
+    width: 40%;
     height: 100%;
     background-color: transparent !important;
     border-left: 1px solid gray;
@@ -253,11 +276,12 @@ const styles = theme => ({
 
 class Reserve extends Component {    
     state = {
-        apiResult: [],
+        theaterResult: [],
+        movieResult: [],
+        movieTimeResult: [],
         completed: 0, // 로딩 애니메이션의 초기값: 0, 0 ~ 100까지 게이지가 채워짐
         loadingText: 0, // 로딩 텍스트
         nullCheck: 0, // nullCheck
-        theaterResult: [],
         newHeight: 0,
         headerHeight: 0,
         prevHeaderHeight: 0,
@@ -267,7 +291,11 @@ class Reserve extends Component {
         dateResult: [],
         selectAreaNo: null,
         selectTheaterNo: null,
-        selectDate: null
+        selectDate: null,
+        selectTitle: null,
+        selectGrade: null,
+        selectKind: null,
+        timeResult: []
     }
 
     componentDidMount() {
@@ -348,27 +376,6 @@ class Reserve extends Component {
         });
     };
 
-    getTheater (index) {
-        var selectDoc = document.querySelectorAll(".moviebody");
-        var selectArea = document.querySelectorAll(".area");
-
-        for(var i = 0; i < selectDoc.length; i++) {
-            if(i === index) {
-                selectDoc[index].style.backgroundColor = '#333';
-                selectDoc[index].style.color = 'white';
-            } else {
-                selectDoc[i].style.backgroundColor = 'transparent';
-                selectDoc[i].style.color = '#666';
-            }
-        }
-
-        for(var i = 0; i < selectArea.length; i++) {
-            selectArea[i].style.backgroundColor = '#E6E4D9';
-            selectArea[i].style.color = 'black';
-            document.getElementById('theaterbody').style.display = 'none'
-        }
-    }
-
     selectArea (index, area) {
         var selectDoc = document.querySelectorAll(".area");
 
@@ -444,7 +451,24 @@ class Reserve extends Component {
 
     }
 
-    getMovie (date) {
+    getMovie (date, index) {
+        var selectDateListBody = document.querySelectorAll(".datelistbody");
+        var selectMovieBody = document.querySelectorAll(".moviebody");
+
+        for(var i = 0; i < selectDateListBody.length; i++) {
+            if(i === index) {
+                selectDateListBody[index].style.border = '1.5px solid #666';
+                selectDateListBody[index].style.padding = '0px 5px 0px 5px';
+            } else {
+                selectDateListBody[i].style.border = '0px';
+                selectDateListBody[i].style.padding = '0px 0px 0px 0px';
+            }
+        }
+        for(var i = 0; i < selectMovieBody.length; i++) {
+            selectMovieBody[i].style.backgroundColor = 'transparent';
+            selectMovieBody[i].style.color = '#666';
+        }
+
         var subDate = null;
         subDate = date.replace(/-/gi, "");
         subDate = subDate.substring(0, 8);
@@ -459,29 +483,85 @@ class Reserve extends Component {
         axios.post('http://localhost:8088/getMovie', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
         .then(res => {
             console.log(res.data);
-            const reserveList = []; // 결과값을 받아올 배열
+            const movieList = []; // 결과값을 받아올 배열
             if(res.data && Array.isArray(res.data)) {
                 console.log(res.data.title);
                 res.data.forEach(el => { // 결과 수 만큼 반복
-                    reserveList.push({ // reserveList에 결과의 원하는 부분을 저장
+                    movieList.push({ // movieListList에 결과의 원하는 부분을 저장
                         title: el.title,
                         grade: el.grade,
+                        kind: el.kind
                     })
-                    console.log(reserveList);
+                    console.log(movieList);
                 })
             }
              this.setState({
-                apiResult: reserveList, // state에 저장
-                nullCheck: 1,
+                movieResult: movieList, // state에 저장
+                nullCheck: 1
             });
         }) 
         .catch(res => console.log(res))
-        console.log(this.apiResult);
+    }
+
+    getMovieTime (index, title, grade, kind) {
+        var selectDoc = document.querySelectorAll(".moviebody");
+        this.state.selectTitle = title;
+        this.state.selectGrade = grade;
+        this.state.selectKind = kind;
+        var cnt = 0;
+
+        for(var i = 0; i < selectDoc.length; i++) {
+            if(i === index) {
+                selectDoc[index].style.backgroundColor = '#333';
+                selectDoc[index].style.color = 'white';
+            } else {
+                selectDoc[i].style.backgroundColor = 'transparent';
+                selectDoc[i].style.color = '#666';
+            }
+        }
+
+        let form = new FormData()
+        form.append('areano', this.state.selectAreaNo)
+        form.append('theaterno', this.state.selectTheaterNo)
+        form.append('date', this.state.selectDate)
+        form.append('title', this.state.selectTitle)
+
+        axios.post('http://localhost:8088/getMovieTime', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
+        .then(res => {
+            const movieTimeList = []; // 결과값을 받아올 배열
+            if(res.data && Array.isArray(res.data)) {
+                for(var i = 0; i < res.data.length; i++) {
+                    movieTimeList[i] = res.data[i];
+                }
+
+                for(var i = 0; i < movieTimeList.length; i++) {
+                    console.log(movieTimeList[i].time);
+                    for(var j = 0; j < movieTimeList[i].time.length - 4; j++) {
+                        if(j === 0) {
+                            this.state.timeResult[cnt] = movieTimeList[i].time.substring(j, 4);
+                            j = j + 4;
+                        } else {
+                            this.state.timeResult[cnt] = movieTimeList[i].time.substring(j, j + 4);
+                            j = j + 4;
+                        }
+                        cnt++;
+                        console.log(this.state.timeResult[j]);
+                    }
+                }
+                console.log(movieTimeList[0]);
+
+                this.setState({
+                    movieTimeResult: movieTimeList // state에 저장
+                });
+            }
+        }) 
+        .catch(res => console.log(res))
+
     }
 
     render() {
         const { classes } = this.props;
-        const { completed, nullCheck, loadingText, dateResult } = this.state;
+        const { completed, nullCheck, loadingText, dateResult, movieTimeResult } = this.state;
 
         return(
             <React.Fragment>
@@ -517,10 +597,10 @@ class Reserve extends Component {
                                     <ScrollBody>
                                     { this.state.theaterResult.map((el, index) => {
                                         if(this.state.selectArea === index) {
-                                            return <React.Fragment>
+                                            return <React.Fragment key = { index }>
                                             { this.state.theaterResult[index].map((i, j) => {
                                                 if(j >= 2) {
-                                                    return <TheaterList key = { j } id = "theaterlist" className = "theaterlist" onClick = { () => this.selectDate(j-1, i.substring(i.indexOf("=") + 1, i.length)) }>
+                                                    return <TheaterList key = { j } id = "theaterlist" className = "theaterlist" onClick = { () => this.selectDate(j - 2, i.substring(i.indexOf("=") + 1, i.length)) }>
                                                         { i.substring(0, i.indexOf("=")) }
                                                     </TheaterList> 
                                                 }
@@ -550,14 +630,14 @@ class Reserve extends Component {
                                                 i.substring(8, 10) === '07' || 
                                                 i.substring(8, 10) === '08' || 
                                                 i.substring(8, 10) === '09') {
-                                                return <DateListBody key = { j } onClick = { () => this.getMovie(el[j]) }>
-                                                            <DayWeek week = { i[11] }>{ i[11] }</DayWeek>
-                                                            <Day week = { i[11] }>{ i.substring(9, 10) }</Day>
+                                                return <DateListBody className = "datelistbody" week = { i[11] } key = { j } onClick = { () => this.getMovie(el[j], j) }>
+                                                            <DayWeek className = "week" week = { i[11] }>{ i[11] }</DayWeek>
+                                                            <Day className = "day" week = { i[11] }>{ i.substring(9, 10) }</Day>
                                                         </DateListBody>
                                             } else {
-                                                return <DateListBody key = { j } onClick = { () => this.getMovie(el[j]) }>
-                                                            <DayWeek week = { i[11] }>{ i[11] }</DayWeek>
-                                                            <Day week = { i[11] }>{ i.substring(8, 10) }</Day>
+                                                return <DateListBody className = "datelistbody" week = { i[11] } key = { j } onClick = { () => this.getMovie(el[j], j) }>
+                                                            <DayWeek className = "week" week = { i[11] }>{ i[11] }</DayWeek>
+                                                            <Day className = "day" week = { i[11] }>{ i.substring(8, 10) }</Day>
                                                         </DateListBody>
                                             }
                                         })}
@@ -569,8 +649,8 @@ class Reserve extends Component {
                         <Movie>
                             <Title border = "movie">영화</Title>
                             <ScrollBody>
-                                { this.state.apiResult.map((el, index) => {
-                                    return <MovieBody id = "moviebody" className = "moviebody" key = { index } onClick = { () => this.getTheater(index) }>
+                                { this.state.movieResult.map((el, index) => {
+                                    return <MovieBody id = "moviebody" className = "moviebody" key = { index } onClick = { () => this.getMovieTime(index, el.title, el.grade, el.kind) }>
                                         <Grade grade = { el.grade }>{ el.grade === '청소' ? '청불' : el.grade }</Grade>
                                         <MovieTitle>{ el.title }</MovieTitle>
                                     </MovieBody>
@@ -579,6 +659,17 @@ class Reserve extends Component {
                         </Movie>
                         <Time>
                             <Title border = "time">시간</Title>
+                            <TimeBody>
+                                <Grade grade = { this.state.selectGrade }>{ this.state.selectGrade === '청소' ? '청불' : this.state.selectGrade }</Grade>
+                                <MovieTitle>{ this.state.selectTitle }</MovieTitle>
+                                <Kind>{ this.state.selectKind }</Kind>
+                                { movieTimeResult.map((i, j) => {
+                                    return <React.Fragment>
+                                        <Floor>{ i.floor }</Floor>
+                                        <Timetable>{ i.time.substring(i, 4) }</Timetable>
+                                    </React.Fragment>
+                                })}
+                            </TimeBody>
                         </Time>
                     </ReserveBody>
                 </MainBack>

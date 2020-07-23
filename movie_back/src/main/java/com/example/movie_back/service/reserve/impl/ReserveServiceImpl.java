@@ -15,6 +15,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.util.SystemPropertyUtils;
 
 @Service
 public class ReserveServiceImpl implements ReserveService{
@@ -43,88 +44,6 @@ public class ReserveServiceImpl implements ReserveService{
 		return base_url;
     }
     
-    @Override
-    public ArrayList<HashMap<String,String>> getMovieList(Model model) {
-        HashMap<String,String> movieMap = new HashMap<String,String>();
-        ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
-        String url = "http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=" + model.getAttribute("areano") + "&theatercode=" + model.getAttribute("theaterno") + "&date=" + model.getAttribute("date"); //크롤링할 url지정
-		Document doc = null;        //Document에는 페이지의 전체 소스가 저장된다
-
-		try {
-			doc = Jsoup.connect(url).get();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        
-        Elements ellength = doc.select(".sect-showtimes > ul > li"); // 해당 일자, 해당 극장의 총 영화 갯수
-
-        // System.out.println(ellength.get(0).select(".info-hall li:first-child"));
-        // System.out.println(eltitle);
-        // System.out.println(elgrade);
-        // System.out.println(elfloor);
-        
-        String title;
-        String grade;
-        String kind;
-        String floor;
-        String time;
-        
-        for(int i = 0; i < ellength.size(); i++) {
-            movieMap = new HashMap<String,String>();
-
-            Elements eltitle = ellength.get(i).select(".info-movie strong");
-            Elements elgrade = ellength.get(i).select(".ico-grade");
-            Elements elkind = ellength.get(i).select(".info-hall li:first-child");
-            Elements elfloor = ellength.get(i).select(".info-hall li:nth-child( 2 )");
-            Elements eltime = ellength.get(i).select(".info-timetable ul li");
-
-            title = eltitle.text();
-            grade = elgrade.text();
-            kind = elkind.text();
-            floor = elfloor.text();
-            time = eltime.text();
-
-            System.out.println(title);
-            System.out.println(grade);
-            System.out.println(kind);
-            System.out.println(floor);
-            
-            // for(int j = 0; j < eltime.size(); j++) {
-                
-            // }
-            System.out.println(eltime.size());
-            
-
-
-            System.out.println("--------------------------------------");
-
-        }
-
-		// for(int i = 0; i < elrank.size(); i++) {
-        //     reserveMap = new HashMap<String,String>();
-        //     title = eltitle.get(i).text();
-		// 	grade = elgrade.get(i).text().substring(0, 2);
-
-        //     reserveMap.put("title", title);
-        //     reserveMap.put("grade", grade);
-            
-		// 	list.add(reserveMap);
-        // }
-        
-		// for(int i = 0; i < elmoretitle.size(); i++) {
-        //     reserveMap = new HashMap<String,String>();
-		// 	title = elmoretitle.get(i).text();
-		// 	grade = elmoregrade.get(i).text().substring(0, 2);
-
-        //     reserveMap.put("title", title);
-        //     reserveMap.put("grade", grade);
-            
-		// 	list.add(reserveMap);
-		// }
-
-        return list;
-    }
-
     @Override
     public ArrayList<ArrayList<String>> getTheaterName(String url) {
         ArrayList<String> theaterMap = new ArrayList<String>();
@@ -194,6 +113,124 @@ public class ReserveServiceImpl implements ReserveService{
 
         System.out.println(list);
         
+        return list;
+    }
+
+    @Override
+    public ArrayList<HashMap<String,String>> getMovieList(Model model) {
+        HashMap<String,String> movieMap = new HashMap<String,String>();
+        ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+        String url = "http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=" + model.getAttribute("areano") + "&theatercode=" + model.getAttribute("theaterno") + "&date=" + model.getAttribute("date"); //크롤링할 url지정
+		Document doc = null;        //Document에는 페이지의 전체 소스가 저장된다
+
+		try {
+			doc = Jsoup.connect(url).get();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+        Elements ellength = doc.select(".sect-showtimes > ul > li"); // 해당 일자, 해당 극장의 총 영화 갯수
+        
+        String title;
+        String grade;
+        String kind = null;
+        
+        for(int i = 0; i < ellength.size(); i++) {
+            movieMap = new HashMap<String,String>();
+
+            Elements eltitle = ellength.get(i).select(".info-movie strong");
+            Elements elgrade = ellength.get(i).select(".ico-grade");
+            Elements elkind = ellength.get(i).select("i");
+
+            for(int j = 0; j < elkind.size(); j++) {
+                if(j < elkind.size() -1) {
+                    kind = kind + elkind.get(j).text() + " | ";
+                } else {
+                    kind = kind + elkind.get(j).text();
+                }
+
+                kind = kind.replaceAll("\\u00A0", ""); // &nbsp; 제거
+                kind = kind.replaceAll("null", "");
+            }
+
+            title = eltitle.text();
+            grade = elgrade.text().substring(0, 2);
+
+            System.out.println(title);
+            System.out.println(grade);
+            System.out.println(kind);
+
+            movieMap.put("title", title);
+            movieMap.put("grade", grade);
+            movieMap.put("kind", kind);
+
+            kind = null;
+
+            list.add(movieMap);
+        }
+
+        return list;
+    }
+
+    @Override
+    public ArrayList<HashMap<String,String>> getMovieTimeList(Model model) {
+        HashMap<String,String> movieTimeMap = new HashMap<String,String>();
+        ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+        String url = "http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=" + model.getAttribute("areano") + "&theatercode=" + model.getAttribute("theaterno") + "&date=" + model.getAttribute("date"); //크롤링할 url지정
+		Document doc = null;        //Document에는 페이지의 전체 소스가 저장된다
+
+		try {
+			doc = Jsoup.connect(url).get();
+		} catch (IOException e) {
+			e.printStackTrace();
+        }
+        
+        Elements eltimelength = null; // 해당 일자, 해당 극장의 총 영화 갯수
+        Elements elfloorlength = null;
+        Elements eltitle = doc.select(".sect-showtimes .col-times > .info-movie strong");
+
+        String title;
+        String floor = null;
+        String time = null;
+        
+        for(int i = 0; i < eltitle.size(); i++) {
+            title = eltitle.get(i).text();
+            if(title.equals(model.getAttribute("title"))) {
+                eltimelength = eltitle.get(i).parent().parent().parent().select(".info-timetable ul");
+                elfloorlength = eltitle.get(i).parent().parent().parent().select(".info-hall ul");
+            }
+        }
+
+        for(int i = 0; i < eltimelength.size(); i++) {
+            movieTimeMap = new HashMap<String,String>();
+            for(int j = 0; j < elfloorlength.get(i).children().select("li").size(); j++) {
+                if(j < elfloorlength.get(i).children().select("li").size() - 1) {
+                    floor = floor + elfloorlength.get(i).children().get(j).select("li").text() + " | ";
+                } else {
+                    floor = floor + elfloorlength.get(i).children().get(j).select("li").text();
+                }
+            }
+
+            floor = floor.replaceAll("null", "");
+
+            movieTimeMap.put("floor", floor);
+
+            for(int j = 0; j < eltimelength.get(i).children().size(); j++) {
+                time = time + eltimelength.get(i).children().get(j).select("li > a").attr("data-playstarttime");
+
+                time = time.replaceAll("null", "");
+
+                movieTimeMap.put("time", time);
+            }
+
+            System.out.println("--------------------------------------");
+
+            floor = null;
+            time = null;
+
+            list.add(movieTimeMap);
+        }
+
         return list;
     }
 }
