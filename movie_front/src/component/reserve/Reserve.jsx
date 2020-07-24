@@ -41,12 +41,13 @@ const ReserveBody = styled.div`
     display: flex;
     flex-wrap: wrap;
     width: 60%;
-    height: 80%;
+    height: 80vh;
     background-color: #F9F5EA;
     border-radius: 5px;
 `
 const ScrollBody = styled.div`
-    height: 68vh;
+    width: 100%;
+    height: 75vh;
     overflow-y: scroll;
     -ms-overflow-style: none; // IE에서 스크롤바 감춤
     &::-webkit-scrollbar { 
@@ -55,6 +56,7 @@ const ScrollBody = styled.div`
 `
 const Title = styled.div`
     width: 100%;
+    height: 3.5vh;
     background-color: #504E48;
     color: white;
     border-radius: ${ 
@@ -69,6 +71,7 @@ const Title = styled.div`
             }
         }
     };
+    line-height: 3.5vh;
 `
 const Grade = styled.div`
     width: 1.5vw;
@@ -109,7 +112,7 @@ const Grade = styled.div`
     line-height: 1.5vw
 `
 const MovieTitle = styled.div`
-    width: 80%;
+    width: 70%;
     height: 1.5vw;
     margin: 0.3vw;
     font-size: 0.8vw;
@@ -125,8 +128,26 @@ const MovieBody = styled.div`
     width: 100%;
     height: auto;
     margin-top: 0.5vw;
-    margin-bottom: 1vw;
-    cursor: pointer;
+    margin-bottom: ${ 
+        props => {
+            switch(props.time) {
+                case 'true' :
+                    return '0';
+                default : 
+                    return '1vw';
+            }
+        }
+    };
+    cursor: ${ 
+        props => {
+            switch(props.time) {
+                case 'true' :
+                    return 'default';
+                default : 
+                    return 'pointer';
+            }
+        }
+    };
     color: #666;
 `
 const TheaterBody = styled.div`
@@ -226,23 +247,70 @@ const Day = styled.div`
 `
 const TimeBody = styled(MovieBody)`
     flex-wrap: wrap;
+    margin-top: 0;
+    cursor: default;
 `
 const Kind = styled.div`
-    margin-bottom: 1vw;
+    margin-bottom: 0.5vw;
     margin-left: 1vw;
     width: 100%;
     font-size: 0.7vw;
     text-align: justify;
 `
 const Floor = styled.div`
+    margin-top: 1.5vw;
+    margin-bottom: 0.5vw;
     margin-left: 1vw;
-    width: 100%;
-    font-size: 1vw;
+    width: 90%;
+    font-size: 0.8vw;
+    font-weight: bold;
     text-align: justify;
 `
+const TimetableBody = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 1vw;
+    width: 80%;
+    cursor: pointer;
+`
+const Timetableinfo = styled.div`
+    width: 100%;
+    margin-left: 1vw;
+    font-size: 1.5vw;
+`
 const Timetable = styled.div`
-    border: 1px solid black;
-    font-size: 0.7vw;
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    padding: 0.4vw;
+    border: solid #CBCABE;
+    border-width: ${ 
+        props => {
+            switch(props.border) {
+                case 0 :
+                    return '1px';
+                case 4 :
+                case 8 :
+                case 12 :
+                case 16 :
+                    return '1px 1px 1px 0px';
+                case 20 :
+                    return '0px 1px 1px 1px';
+                case 40 :
+                    return '0px 1px 1px 1px';
+                default : 
+                    return '0px 1px 1px 0px';
+            }
+        }
+    };
+    font-size: 0.8vw;
+    font-weight: bold;
+`
+const Timetabletime = styled.div`
+`
+const Timetableseat = styled.div`
+    margin-top: 0.2vw;
+    color: #2275A4;
 `
 const Movie = styled.div`
     width: 15%;
@@ -398,6 +466,9 @@ class Reserve extends Component {
 
     selectDate (index, theater) {
         var selectDate = document.querySelectorAll(".theaterlist");
+        var selectDateListBody = document.querySelectorAll(".datelistbody");
+        document.getElementById("displaymovie").style.display = "none"
+        document.getElementById("displaytime").style.display = "none"
 
         for(var i = 0; i < selectDate.length; i++) {
             if(i === index) {
@@ -407,6 +478,10 @@ class Reserve extends Component {
                 selectDate[i].style.backgroundColor = 'transparent';
                 selectDate[i].style.color = '#666';
             }
+        }
+        for(var i = 0; i < selectDateListBody.length; i++) {
+            selectDateListBody[i].style.border = '0px';
+            selectDateListBody[i].style.padding = '0px 0px 0px 0px';
         }
 
         let newDate = new window.Date();
@@ -454,6 +529,8 @@ class Reserve extends Component {
     getMovie (date, index) {
         var selectDateListBody = document.querySelectorAll(".datelistbody");
         var selectMovieBody = document.querySelectorAll(".moviebody");
+        document.getElementById("displaymovie").style.display = "block"
+        document.getElementById("displaytime").style.display = "none"
 
         for(var i = 0; i < selectDateListBody.length; i++) {
             if(i === index) {
@@ -504,6 +581,8 @@ class Reserve extends Component {
     }
 
     getMovieTime (index, title, grade, kind) {
+        document.getElementById("displaytime").style.display = "block"
+
         var selectDoc = document.querySelectorAll(".moviebody");
         this.state.selectTitle = title;
         this.state.selectGrade = grade;
@@ -529,6 +608,7 @@ class Reserve extends Component {
         axios.post('http://localhost:8088/getMovieTime', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
         .then(res => {
             const movieTimeList = []; // 결과값을 받아올 배열
+            this.state.timeResult = [];
             if(res.data && Array.isArray(res.data)) {
                 for(var i = 0; i < res.data.length; i++) {
                     movieTimeList[i] = res.data[i];
@@ -536,19 +616,20 @@ class Reserve extends Component {
 
                 for(var i = 0; i < movieTimeList.length; i++) {
                     console.log(movieTimeList[i].time);
-                    for(var j = 0; j < movieTimeList[i].time.length - 4; j++) {
-                        if(j === 0) {
-                            this.state.timeResult[cnt] = movieTimeList[i].time.substring(j, 4);
-                            j = j + 4;
-                        } else {
-                            this.state.timeResult[cnt] = movieTimeList[i].time.substring(j, j + 4);
-                            j = j + 4;
+                    if(!movieTimeList[i].time) {
+                        var timeArray = [];
+                        timeArray[i] = "null";
+
+                        this.state.timeResult[i] = timeArray;
+                    } else {
+                        var timeArray = [];
+                        for(var j = 0; j < movieTimeList[i].time.length; j = j + 4) {
+                            timeArray[j] = movieTimeList[i].time.substring(j, j + 4);
                         }
-                        cnt++;
-                        console.log(this.state.timeResult[j]);
+                        this.state.timeResult[i] = timeArray;
                     }
                 }
-                console.log(movieTimeList[0]);
+                console.log(this.state.timeResult);
 
                 this.setState({
                     movieTimeResult: movieTimeList // state에 저장
@@ -561,7 +642,7 @@ class Reserve extends Component {
 
     render() {
         const { classes } = this.props;
-        const { completed, nullCheck, loadingText, dateResult, movieTimeResult } = this.state;
+        const { completed, nullCheck, loadingText, dateResult, movieTimeResult, timeResult } = this.state;
 
         return(
             <React.Fragment>
@@ -594,7 +675,7 @@ class Reserve extends Component {
                                 })}
                                 </AreaBody>
                                 <TheaterListBody id = "theaterbody">
-                                    <ScrollBody>
+                                    <ScrollBody className = "scrollbody">
                                     { this.state.theaterResult.map((el, index) => {
                                         if(this.state.selectArea === index) {
                                             return <React.Fragment key = { index }>
@@ -614,8 +695,8 @@ class Reserve extends Component {
                         </Theater>
                         <Date>
                             <Title>날짜</Title>
-                            <DateBody id = "datebody">
-                                <ScrollBody>
+                            <DateBody id = "datebody" className = "datebody">
+                                <ScrollBody id = "displaydate">
                                     { dateResult.map((el, index) => {
                                         return <React.Fragment key = { index }>
                                                 <Year>{ el[0].substring(0, 4) }</Year>
@@ -648,7 +729,7 @@ class Reserve extends Component {
                         </Date>
                         <Movie>
                             <Title border = "movie">영화</Title>
-                            <ScrollBody>
+                            <ScrollBody id = "displaymovie">
                                 { this.state.movieResult.map((el, index) => {
                                     return <MovieBody id = "moviebody" className = "moviebody" key = { index } onClick = { () => this.getMovieTime(index, el.title, el.grade, el.kind) }>
                                         <Grade grade = { el.grade }>{ el.grade === '청소' ? '청불' : el.grade }</Grade>
@@ -659,16 +740,33 @@ class Reserve extends Component {
                         </Movie>
                         <Time>
                             <Title border = "time">시간</Title>
-                            <TimeBody>
-                                <Grade grade = { this.state.selectGrade }>{ this.state.selectGrade === '청소' ? '청불' : this.state.selectGrade }</Grade>
-                                <MovieTitle>{ this.state.selectTitle }</MovieTitle>
-                                <Kind>{ this.state.selectKind }</Kind>
-                                { movieTimeResult.map((i, j) => {
-                                    return <React.Fragment>
-                                        <Floor>{ i.floor }</Floor>
-                                        <Timetable>{ i.time.substring(i, 4) }</Timetable>
-                                    </React.Fragment>
-                                })}
+                            <TimeBody id = "displaytime">
+                                <ScrollBody>
+                                    <MovieBody time = "true">
+                                        <Grade grade = { this.state.selectGrade }>{ this.state.selectGrade === '청소' ? '청불' : this.state.selectGrade }</Grade>
+                                        <MovieTitle>{ this.state.selectTitle }</MovieTitle>
+                                    </MovieBody>
+                                    <Kind>{ this.state.selectKind }</Kind>
+                                        { movieTimeResult.map((el, index) => {
+                                            return <React.Fragment key = { index }>
+                                                <Floor>▶&nbsp;{ el.floor }</Floor>
+                                                <TimetableBody>
+                                                { timeResult[index].map((i , j) => {
+                                                    if(i === "null") {
+                                                        return <Timetableinfo>
+                                                                    현재 상영시간이 없습니다!
+                                                                </Timetableinfo>
+                                                    } else {
+                                                        return <Timetable border = { j } key = { j }>
+                                                                    <Timetabletime>{ i.substring(0, 2) + " : " + i.substring(2, 4) }</Timetabletime>
+                                                                    <Timetableseat>{ el.floor.substring(el.floor.length - 4, el.floor.length)}</Timetableseat>
+                                                                </Timetable>
+                                                    }
+                                                })}
+                                                </TimetableBody>
+                                            </React.Fragment>
+                                        })}
+                                </ScrollBody>
                             </TimeBody>
                         </Time>
                     </ReserveBody>
