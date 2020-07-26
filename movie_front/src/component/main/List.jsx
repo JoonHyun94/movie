@@ -284,9 +284,7 @@ class List extends Component {
             alert("로그인시 이용가능합니다.");
             window.location.href = '/main';
         } else {
-            console.log(window.location.protocol + "//" + window.location.host + "/" + window.location.pathname);
             window.location.href = '/reserve';
-            // window.open('/reserve','movie_reserve','width=1000,height=600,location=no,status=no,scrollbars=yes');
         }
     }
 

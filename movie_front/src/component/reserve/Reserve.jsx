@@ -6,6 +6,7 @@ import { generateMedia } from 'styled-media-query';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { withStyles } from '@material-ui/core/styles';
 import { Motion, spring } from 'react-motion';
+import ReservePopComponent from '../reserve/ReservePop';
 
 const Mainloading = styled.div`
     position: absolute;
@@ -354,16 +355,24 @@ class Reserve extends Component {
         headerHeight: 0,
         prevHeaderHeight: 0,
         mainTag: null,
-        selectArea: 0,
+        selectAreaIndex: 0,
         subStringArea: null,
         dateResult: [],
+        timeResult: [],
         selectAreaNo: null,
+        selectArea: null,
         selectTheaterNo: null,
+        selectTheater: null,
         selectDate: null,
+        selectWeek: null,
+        selectDay: null,
         selectTitle: null,
         selectGrade: null,
         selectKind: null,
-        timeResult: []
+        selectRuntime: null,
+        selectTime: null,
+        selectSeat: null,
+        modalOpen: false
     }
 
     componentDidMount() {
@@ -444,7 +453,8 @@ class Reserve extends Component {
         });
     };
 
-    selectArea (index, area) {
+    selectArea (index, areano, area) {
+        document.getElementById("displaydate").style.display = "none";
         var selectDoc = document.querySelectorAll(".area");
 
         for(var i = 0; i < selectDoc.length; i++) {
@@ -459,14 +469,18 @@ class Reserve extends Component {
             }
         }
 
-        this.state.selectArea = index;
-        this.state.selectAreaNo = area;
+        this.state.selectAreaIndex = index;
+        this.state.selectAreaNo = areano;
+        this.state.selectArea = area;
+
         document.getElementById('theaterbody').style.display = 'block'
     }
 
-    selectDate (index, theater) {
+    selectDate (index, theaterno, theater) {
         var selectDate = document.querySelectorAll(".theaterlist");
         var selectDateListBody = document.querySelectorAll(".datelistbody");
+
+        document.getElementById("displaydate").style.display = "block";
         document.getElementById("displaymovie").style.display = "none"
         document.getElementById("displaytime").style.display = "none"
 
@@ -521,12 +535,14 @@ class Reserve extends Component {
             this.state.dateResult[i+1] = dateArray;
         }
 
-        this.state.selectTheaterNo = theater;
+        this.state.selectTheaterNo = theaterno;
+        this.state.selectTheater = theater;
+
         console.log(this.state.dateResult);
 
     }
 
-    getMovie (date, index) {
+    getMovie (date, index, week, month, day) {
         var selectDateListBody = document.querySelectorAll(".datelistbody");
         var selectMovieBody = document.querySelectorAll(".moviebody");
         document.getElementById("displaymovie").style.display = "block"
@@ -551,6 +567,8 @@ class Reserve extends Component {
         subDate = subDate.substring(0, 8);
 
         this.state.selectDate = subDate;
+        this.state.selectWeek = week;
+        this.state.selectDay = month + day;
 
         let form = new FormData()
         form.append('areano', this.state.selectAreaNo)
@@ -567,7 +585,8 @@ class Reserve extends Component {
                     movieList.push({ // movieListList에 결과의 원하는 부분을 저장
                         title: el.title,
                         grade: el.grade,
-                        kind: el.kind
+                        kind: el.kind,
+                        runtime: el.runtime
                     })
                     console.log(movieList);
                 })
@@ -580,13 +599,14 @@ class Reserve extends Component {
         .catch(res => console.log(res))
     }
 
-    getMovieTime (index, title, grade, kind) {
+    getMovieTime (index, title, grade, kind, runtime) {
         document.getElementById("displaytime").style.display = "block"
 
         var selectDoc = document.querySelectorAll(".moviebody");
         this.state.selectTitle = title;
         this.state.selectGrade = grade;
         this.state.selectKind = kind;
+        this.state.selectRuntime = runtime;
         var cnt = 0;
 
         for(var i = 0; i < selectDoc.length; i++) {
@@ -640,6 +660,48 @@ class Reserve extends Component {
 
     }
 
+    selectSeat (time, seat) {
+        this.state.selectTime = time;
+        this.state.selectSeat = seat;
+
+        let form = new FormData()
+        form.append('id', window.sessionStorage.getItem("id"));
+        form.append('area', this.state.selectArea)
+        form.append('theater', this.state.selectTheater)
+        form.append('week', this.state.selectWeek)
+        form.append('day', this.state.selectDay)
+        form.append('grade', this.state.selectGrade)
+        form.append('title', this.state.selectTitle)
+        form.append('time', this.state.selectTime)
+        form.append('runtime', this.state.selectRuntime)
+        form.append('seat', this.state.selectSeat)
+
+        axios.post('http://localhost:8088/reservePop', form, { headers: { 'Content-Type': 'multipart/form-data;' }})
+        .then(res => {
+                console.log(res.data);
+                if(res.data.tprr === "true" && res.data.reserve === "true") {
+                    alert("이미 예약된 내역이 있습니다.");
+                } else if(res.data.tprr === "true" && res.data.reserve === "false") {
+                    var msg = "진행중인 예약 내용이 있습니다. 불러오시겠습니까?";
+                    if(window.confirm(msg) != 0) {
+                        this.setState({ modalOpen: true });
+                        // window.open('/reserve_pop','movie_reserve','width=1000,height=600,location=no,status=no,scrollbars=yes');
+                    }
+                } else if(res.data.tprr === "false" && res.data.reserve === "true") {
+                    alert("이미 예약된 내역이 있습니다.");
+                } else if(res.data.tprr === "false" && res.data.reserve === "false") {
+                    this.setState({ modalOpen: true });
+                    // window.open('/reserve_pop','movie_reserve','width=1000,height=600,location=no,status=no,scrollbars=yes');
+                }
+            }
+        ) 
+        .catch(res => console.log(res))
+    }
+
+    closeModal = () => {
+        this.setState({ modalOpen: false });
+    }
+
     render() {
         const { classes } = this.props;
         const { completed, nullCheck, loadingText, dateResult, movieTimeResult, timeResult } = this.state;
@@ -669,7 +731,7 @@ class Reserve extends Component {
                             <TheaterBody>
                                 <AreaBody id = "areabody">
                                 { this.state.theaterResult.map((el, index) => {
-                                    return <Area key = { index } className = "area" onClick = { () => this.selectArea(index, el[1]) }>
+                                    return <Area key = { index } className = "area" onClick = { () => this.selectArea(index, el[1], el[0].substr(2)) }>
                                                 { el[0].substr(2) }({ this.state.theaterResult[index].length })
                                             </Area>
                                 })}
@@ -677,11 +739,11 @@ class Reserve extends Component {
                                 <TheaterListBody id = "theaterbody">
                                     <ScrollBody className = "scrollbody">
                                     { this.state.theaterResult.map((el, index) => {
-                                        if(this.state.selectArea === index) {
+                                        if(this.state.selectAreaIndex === index) {
                                             return <React.Fragment key = { index }>
                                             { this.state.theaterResult[index].map((i, j) => {
                                                 if(j >= 2) {
-                                                    return <TheaterList key = { j } id = "theaterlist" className = "theaterlist" onClick = { () => this.selectDate(j - 2, i.substring(i.indexOf("=") + 1, i.length)) }>
+                                                    return <TheaterList key = { j } id = "theaterlist" className = "theaterlist" onClick = { () => this.selectDate(j - 2, i.substring(i.indexOf("=") + 1, i.length), i.substring(0, i.indexOf("="))) }>
                                                         { i.substring(0, i.indexOf("=")) }
                                                     </TheaterList> 
                                                 }
@@ -711,12 +773,12 @@ class Reserve extends Component {
                                                 i.substring(8, 10) === '07' || 
                                                 i.substring(8, 10) === '08' || 
                                                 i.substring(8, 10) === '09') {
-                                                return <DateListBody className = "datelistbody" week = { i[11] } key = { j } onClick = { () => this.getMovie(el[j], j) }>
+                                                return <DateListBody className = "datelistbody" week = { i[11] } key = { j } onClick = { () => this.getMovie(el[j], j, i[11], el[0].substring(5, 7), i.substring(9, 10)) }>
                                                             <DayWeek className = "week" week = { i[11] }>{ i[11] }</DayWeek>
                                                             <Day className = "day" week = { i[11] }>{ i.substring(9, 10) }</Day>
                                                         </DateListBody>
                                             } else {
-                                                return <DateListBody className = "datelistbody" week = { i[11] } key = { j } onClick = { () => this.getMovie(el[j], j) }>
+                                                return <DateListBody className = "datelistbody" week = { i[11] } key = { j } onClick = { () => this.getMovie(el[j], j, i[11], el[0].substring(5, 7), i.substring(8, 10)) }>
                                                             <DayWeek className = "week" week = { i[11] }>{ i[11] }</DayWeek>
                                                             <Day className = "day" week = { i[11] }>{ i.substring(8, 10) }</Day>
                                                         </DateListBody>
@@ -731,7 +793,7 @@ class Reserve extends Component {
                             <Title border = "movie">영화</Title>
                             <ScrollBody id = "displaymovie">
                                 { this.state.movieResult.map((el, index) => {
-                                    return <MovieBody id = "moviebody" className = "moviebody" key = { index } onClick = { () => this.getMovieTime(index, el.title, el.grade, el.kind) }>
+                                    return <MovieBody id = "moviebody" className = "moviebody" key = { index } onClick = { () => this.getMovieTime(index, el.title, el.grade, el.kind, el.runtime) }>
                                         <Grade grade = { el.grade }>{ el.grade === '청소' ? '청불' : el.grade }</Grade>
                                         <MovieTitle>{ el.title }</MovieTitle>
                                     </MovieBody>
@@ -757,7 +819,7 @@ class Reserve extends Component {
                                                                     현재 상영시간이 없습니다!
                                                                 </Timetableinfo>
                                                     } else {
-                                                        return <Timetable border = { j } key = { j }>
+                                                        return <Timetable border = { j } key = { j } onClick = { () => this.selectSeat(i, el.floor.substring(el.floor.length - 4, el.floor.length)) }>
                                                                     <Timetabletime>{ i.substring(0, 2) + " : " + i.substring(2, 4) }</Timetabletime>
                                                                     <Timetableseat>{ el.floor.substring(el.floor.length - 4, el.floor.length)}</Timetableseat>
                                                                 </Timetable>
@@ -772,6 +834,7 @@ class Reserve extends Component {
                     </ReserveBody>
                 </MainBack>
                 }
+                <ReservePopComponent modalOpen = { this.state.modalOpen } modalClose = { this.closeModal }/>
             </React.Fragment>
         )
     }

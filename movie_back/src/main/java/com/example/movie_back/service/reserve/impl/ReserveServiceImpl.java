@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.example.movie_back.dao.reserve.ReserveDao;
 import com.example.movie_back.service.reserve.face.ReserveService;
 
 import org.jsoup.Jsoup;
@@ -13,12 +14,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import org.springframework.util.SystemPropertyUtils;
 
 @Service
 public class ReserveServiceImpl implements ReserveService{
+    @Autowired
+    private ReserveDao reserveDao;
+
     //WebDriver
     private WebDriver driver;
 	private WebElement webElement;
@@ -134,6 +138,7 @@ public class ReserveServiceImpl implements ReserveService{
         String title;
         String grade;
         String kind = null;
+        String runtime = null;
         
         for(int i = 0; i < ellength.size(); i++) {
             movieMap = new HashMap<String,String>();
@@ -143,6 +148,8 @@ public class ReserveServiceImpl implements ReserveService{
             Elements elkind = ellength.get(i).select("i");
 
             for(int j = 0; j < elkind.size(); j++) {
+                runtime = elkind.get(1).text();
+
                 if(j < elkind.size() -1) {
                     kind = kind + elkind.get(j).text() + " | ";
                 } else {
@@ -151,6 +158,8 @@ public class ReserveServiceImpl implements ReserveService{
 
                 kind = kind.replaceAll("\\u00A0", ""); // &nbsp; 제거
                 kind = kind.replaceAll("null", "");
+                runtime = runtime.replaceAll("\\u00A0", "");
+                runtime = runtime.replaceAll("null", "");
             }
 
             title = eltitle.text();
@@ -163,6 +172,7 @@ public class ReserveServiceImpl implements ReserveService{
             movieMap.put("title", title);
             movieMap.put("grade", grade);
             movieMap.put("kind", kind);
+            movieMap.put("runtime", runtime);
 
             kind = null;
 
@@ -232,5 +242,58 @@ public class ReserveServiceImpl implements ReserveService{
         }
 
         return list;
+    }
+
+    @Override
+    public boolean checkReserveInfo(Model model) {
+        boolean result = true;
+        String check;
+
+        check = reserveDao.selectReserveInfo(model);
+        System.out.println(check);
+
+        if(check.equalsIgnoreCase("null")) {
+            result = false;
+            System.out.println("false");
+            return result;
+
+        } else {
+            result = true;
+            System.out.println("true");
+            return result;
+        }
+    }
+
+    @Override
+    public boolean checkReserve(Model model) {
+        boolean result = true;
+        String check;
+
+        check = reserveDao.selectReserve(model);
+        System.out.println(check);
+
+        if(check.equalsIgnoreCase("null")) {
+            result = false;
+            System.out.println("false");
+            return result;
+
+        } else {
+            result = true;
+            System.out.println("true");
+            return result;
+        }
+    }
+
+    @Override
+    public void setReserveInfo(Model model) {
+        reserveDao.insertReserveInfo(model);
+    }
+
+    @Override
+    public HashMap<String,String> getReserveInfo() {
+        HashMap<String,String> result = new HashMap<String,String>();
+
+        String ss = reserveDao.selectReserveTprr();
+        return result;
     }
 }

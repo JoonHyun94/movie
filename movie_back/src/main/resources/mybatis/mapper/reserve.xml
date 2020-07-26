@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.movie_back.dao.reserve.ReserveDao">
+
+    <select id = "selectReserveInfo" resultType="String">
+    	SELECT NVL(MAX(id), 'null') FROM temporary_reserve
+		WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
+    </select>
+
+    <select id = "selectReserve" resultType="String">
+    	SELECT NVL(MAX(id), 'null') FROM reserve
+		WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND start_time = #{time }
+    </select>
+
+	<insert id = "insertReserveInfo">
+        INSERT INTO temporary_reserve
+		VALUES (#{id }, #{area }, #{theater }, #{week }, #{day }, #{grade }, #{title }, #{time }, #{runtime }, #{seat })
+	</insert>
+
+    <select id = "selectReserveInfo" resultType="String">
+    	SELECT NVL(MAX(id), 'null') FROM temporary_reserve
+		WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
+    </select>
+
+</mapper>

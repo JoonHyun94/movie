@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.example.movie_back.dto.ReserveVO;
 import com.example.movie_back.service.reserve.face.ReserveService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ReserveController {
     @Autowired
-    ReserveService reserveService;
-    
+    private ReserveService reserveService;
+
     //Properties
     public static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
     public static final String WEB_DRIVER_PATH = "C:/Program Files/selenium/chromedriver_win32/chromedriver.exe";
@@ -29,6 +30,8 @@ public class ReserveController {
     ArrayList<ArrayList<String>> theaterName = new ArrayList<ArrayList<String>>();
     ArrayList<HashMap<String,String>> movieList = new ArrayList<HashMap<String,String>>();
     ArrayList<HashMap<String,String>> movieTimeList = new ArrayList<HashMap<String,String>>();
+    HashMap<String,String> checkReserve = new HashMap<String,String>();
+    HashMap<String,String> getReserveInfo = new HashMap<String,String>();
 
     @GetMapping("/reserve")
     public ArrayList<ArrayList<String>> getTheater() {
@@ -80,8 +83,55 @@ public class ReserveController {
         model.addAttribute("title", title);
 
         movieTimeList = reserveService.getMovieTimeList(model);
-
+    
         System.out.println(movieTimeList);
+    
         return movieTimeList;
+    }
+
+    @PostMapping("/reservePop")
+    public HashMap<String,String> reservePop(HttpServletRequest req, Model model) {
+        boolean tprr_check = true; // 진행중인 예약 목록 확인
+        boolean reserve_check = true; // 예약 목록 확인
+
+        model.addAttribute("id", req.getParameter("id"));
+        model.addAttribute("area", req.getParameter("area"));
+        model.addAttribute("theater", req.getParameter("theater"));
+        model.addAttribute("week", req.getParameter("week"));
+        model.addAttribute("day", req.getParameter("day"));
+        model.addAttribute("grade", req.getParameter("grade"));
+        model.addAttribute("title", req.getParameter("title"));
+        model.addAttribute("time", req.getParameter("time"));
+        model.addAttribute("runtime", req.getParameter("runtime"));
+        model.addAttribute("seat", req.getParameter("seat"));
+
+        tprr_check = reserveService.checkReserveInfo(model);
+        reserve_check = reserveService.checkReserve(model);
+        System.out.println("tprr_check : " + tprr_check);
+        System.out.println("reserve_check : " + reserve_check);
+
+        if(tprr_check == false && reserve_check == false) {
+            reserveService.setReserveInfo(model);
+            checkReserve.put("tprr", "false");
+            checkReserve.put("reserve", "false");
+        } else if(tprr_check == true && reserve_check == false) {
+            checkReserve.put("tprr", "true");
+            checkReserve.put("reserve", "false");
+        } else if(tprr_check == false && reserve_check == true) {
+            checkReserve.put("tprr", "false");
+            checkReserve.put("reserve", "true");
+        } else if(tprr_check == true && reserve_check == true) {
+            checkReserve.put("tprr", "true");
+            checkReserve.put("reserve", "true");
+        }
+
+        return checkReserve;
+    }
+
+    @GetMapping("/reservePop")
+    public HashMap<String,String> reservePop() {
+
+        getReserveInfo = reserveService.getReserveInfo();
+        return getReserveInfo;
     }
 } 

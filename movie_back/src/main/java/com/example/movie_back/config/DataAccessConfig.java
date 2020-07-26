@@ -9,11 +9,9 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
-@MapperScan(value={"com.example.movie_back.dao.member"} ,sqlSessionFactoryRef="sqlSessionFactory")
+@MapperScan(value={"com.example.movie_back.dao"} ,sqlSessionFactoryRef="sqlSessionFactory")
 public class DataAccessConfig {
 	@Bean
 	public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {

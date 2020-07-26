@@ -15,4 +15,11 @@ public interface ReserveService {
 
     public ArrayList<HashMap<String,String>> getMovieTimeList(Model model);
 
+    public boolean checkReserveInfo(Model model);
+
+    public boolean checkReserve(Model model);
+
+    public void setReserveInfo(Model model);
+
+    public HashMap<String,String> getReserveInfo();
 }

@@ -33,4 +33,4 @@
 		WHERE name = #{name } AND security_number = #{security_number }
 	</select>
    
- </mapper>
+</mapper>
