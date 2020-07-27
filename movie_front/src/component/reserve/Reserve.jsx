@@ -372,7 +372,8 @@ class Reserve extends Component {
         selectRuntime: null,
         selectTime: null,
         selectSeat: null,
-        modalOpen: false
+        modalOpen: false,
+        popData: []
     }
 
     componentDidMount() {
@@ -676,6 +677,17 @@ class Reserve extends Component {
         form.append('runtime', this.state.selectRuntime)
         form.append('seat', this.state.selectSeat)
 
+        this.state.popData[0] = window.sessionStorage.getItem("id");
+        this.state.popData[1] = this.state.selectArea;
+        this.state.popData[2] = this.state.selectTheater;
+        this.state.popData[3] = this.state.selectWeek;
+        this.state.popData[4] = this.state.selectDay;
+        this.state.popData[5] = this.state.selectGrade;
+        this.state.popData[6] = this.state.selectTitle;
+        this.state.popData[7] = this.state.selectTime;
+        this.state.popData[8] = this.state.selectRuntime;
+        this.state.popData[9] = this.state.selectSeat;
+
         axios.post('http://localhost:8088/reservePop', form, { headers: { 'Content-Type': 'multipart/form-data;' }})
         .then(res => {
                 console.log(res.data);
@@ -685,13 +697,11 @@ class Reserve extends Component {
                     var msg = "진행중인 예약 내용이 있습니다. 불러오시겠습니까?";
                     if(window.confirm(msg) != 0) {
                         this.setState({ modalOpen: true });
-                        // window.open('/reserve_pop','movie_reserve','width=1000,height=600,location=no,status=no,scrollbars=yes');
                     }
                 } else if(res.data.tprr === "false" && res.data.reserve === "true") {
                     alert("이미 예약된 내역이 있습니다.");
                 } else if(res.data.tprr === "false" && res.data.reserve === "false") {
                     this.setState({ modalOpen: true });
-                    // window.open('/reserve_pop','movie_reserve','width=1000,height=600,location=no,status=no,scrollbars=yes');
                 }
             }
         ) 
@@ -834,7 +844,7 @@ class Reserve extends Component {
                     </ReserveBody>
                 </MainBack>
                 }
-                <ReservePopComponent modalOpen = { this.state.modalOpen } modalClose = { this.closeModal }/>
+                <ReservePopComponent modalOpen = { this.state.modalOpen } modalClose = { this.closeModal } popData = {this.state.popData }/>
             </React.Fragment>
         )
     }

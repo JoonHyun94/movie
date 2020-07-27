@@ -18,7 +18,7 @@
 		VALUES (#{id }, #{area }, #{theater }, #{week }, #{day }, #{grade }, #{title }, #{time }, #{runtime }, #{seat })
 	</insert>
 
-    <select id = "selectReserveInfo" resultType="String">
+    <select id = "selectReserveTprr" resultType="String">
     	SELECT NVL(MAX(id), 'null') FROM temporary_reserve
 		WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
     </select>
