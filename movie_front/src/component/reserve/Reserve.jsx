@@ -661,7 +661,7 @@ class Reserve extends Component {
 
     }
 
-    selectSeat (time, seat) {
+    selectSeat (time, seat, floor) {
         this.state.selectTime = time;
         this.state.selectSeat = seat;
 
@@ -681,12 +681,13 @@ class Reserve extends Component {
         this.state.popData[1] = this.state.selectArea;
         this.state.popData[2] = this.state.selectTheater;
         this.state.popData[3] = this.state.selectWeek;
-        this.state.popData[4] = this.state.selectDay;
+        this.state.popData[4] = this.state.selectDate;
         this.state.popData[5] = this.state.selectGrade;
         this.state.popData[6] = this.state.selectTitle;
         this.state.popData[7] = this.state.selectTime;
         this.state.popData[8] = this.state.selectRuntime;
         this.state.popData[9] = this.state.selectSeat;
+        this.state.popData[10] = floor;
 
         axios.post('http://localhost:8088/reservePop', form, { headers: { 'Content-Type': 'multipart/form-data;' }})
         .then(res => {
@@ -829,7 +830,7 @@ class Reserve extends Component {
                                                                     현재 상영시간이 없습니다!
                                                                 </Timetableinfo>
                                                     } else {
-                                                        return <Timetable border = { j } key = { j } onClick = { () => this.selectSeat(i, el.floor.substring(el.floor.length - 4, el.floor.length)) }>
+                                                        return <Timetable border = { j } key = { j } onClick = { () => this.selectSeat(i, el.floor.substring(el.floor.length - 4, el.floor.length), el.floor) }>
                                                                     <Timetabletime>{ i.substring(0, 2) + " : " + i.substring(2, 4) }</Timetabletime>
                                                                     <Timetableseat>{ el.floor.substring(el.floor.length - 4, el.floor.length)}</Timetableseat>
                                                                 </Timetable>
