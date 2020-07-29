@@ -65,8 +65,7 @@ const ReserveMain = styled.div`
     width: 100%;
 `
 const Info = styled.div`
-    margin-top: 6vw;
-    margin-right: 7vw;
+    margin-top: 3vw;
     text-align: justify;
     font-size: 1.2vw;
     line-height: 2vw;
@@ -75,7 +74,7 @@ const InfoBody = styled.div`
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 2vw;
-    width: 100%;    
+    width: 100%;
 `
 const InfoBox = styled.div`
     width: 2vw;
@@ -103,9 +102,34 @@ const InfoBox = styled.div`
         }
     };
 `
+const CheckBox = styled.input`
+    width: 1.5vw;
+    height: 1.5vw;
+    margin-bottom: 0.2vw;
+`
 const InfoText = styled.div`
+    width: ${ 
+        props => {
+            switch(props.info) {
+                case 'true' :
+                    return '80%';
+                default : 
+                    return '10%';
+            }
+        }
+    };
     margin-left: 0.5vw;
     font-size: 0.8vw;
+    line-height: ${ 
+        props => {
+            switch(props.info) {
+                case 'true' :
+                    return '2vw';
+                default : 
+                    return '1.5vw';
+            }
+        }
+    };
 `
 const Title = styled.div`
     margin-top: ${ 
@@ -113,6 +137,8 @@ const Title = styled.div`
             switch(props.small) {
                 case 'true' :
                     return '2vw';
+                case 'false' :
+                    return '0';
                 default : 
                     return '0';
             }
@@ -123,12 +149,25 @@ const Title = styled.div`
             switch(props.small) {
                 case 'true' :
                     return '0';
+                case 'false' :
+                    return '5vw'
                 default : 
-                    return '5vw';
+                    return '0.5vw';
             }
         }
     };
-    margin-left: 7vw;
+    margin-left: ${ 
+        props => {
+            switch(props.small) {
+                case 'true' :
+                    return '7vw';
+                case 'false' :
+                    return '7vw'
+                default : 
+                    return '0';
+            }
+        }
+    };
     width: 100%;
     text-align: justify;
     font-size: ${ 
@@ -136,8 +175,10 @@ const Title = styled.div`
             switch(props.small) {
                 case 'true' :
                     return '0.9vw';
+                case 'false' :
+                    return '1.5vw'
                 default : 
-                    return '1.5vw';
+                    return '1vw';
             }
         }
     };
@@ -159,6 +200,7 @@ const Seat = styled.div`
     height: 50vh;
     margin: 0 auto;
     margin-left: 8vw;
+    margin-right: 3vw;
     display: flex;
     flex-wrap: wrap;
 `
@@ -223,24 +265,11 @@ var state = {
     timeCnt: 0,
     timeCheck: 0,
     subtimeCheck: 0,
+    selectSeat: false,
+    ticketNum: 0,
+    seatCnt: 0,
     alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' ,'K', 'L', 'M', 'N', 'O', 'P']
 }
-
-const selectSeat = (parent, index) => {
-    // var selectSeats = document.querySelectorAll(".seatlist").parent.parent;
-
-    // console.log(selectSeats);
-    // for(var i = 0; i < selectSeats.length; i++) {
-    //     if(i === index) {
-    //         selectSeats[index].style.backgroundColor = '#333';
-    //         selectSeats[index].style.color = 'white';
-    //     } else {
-    //         selectSeats[i].style.backgroundColor = 'transparent';
-    //         selectSeats[i].style.color = '#666';
-    //     }
-    // }
-}
-
 
 const ReservePop = ({ modalOpen, modalClose, popData }) => {
 
@@ -276,6 +305,8 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
         }
 
         if(state.api === 1) {
+            state.selectSeat = false;
+            state.ticketNum = 100;
 
             console.log(popData);
             state.seat = popData[9].substring(0, popData[9].length - 1);
@@ -294,9 +325,10 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
             // 종영시간
             if(state.timeCnt === 0) {
                 for(var i = 0; i < state.endTime; i++) {
-                    if(i > 59) {
+                    if(i === 60 || i === 120 || i === 180) {
                         state.timeCheck += 1;
                         state.endTime -= i;
+                        console.log("endTime : " + state.endTime);
                     }
                 }
                 state.timeCnt = 1;
@@ -307,8 +339,10 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                     state.timeCheck += 1;
                     state.subtimeCheck = (state.subtimeCheck + state.endTime) - 60;
                     console.log(state.subtimeCheck);
-                    state.timeCnt = 2;
+                } else {
+                    state.subtimeCheck = state.subtimeCheck + state.endTime;
                 }
+                state.timeCnt = 2;
             }
             
             if(state.timeCnt === 2) {
@@ -348,6 +382,8 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
     } else {
         state.count = 0;
         state.api = 0;
+        state.selectSeat = false;
+        state.ticketNum = 100;
     }
 
     return(
@@ -363,7 +399,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                             { state.count === 1 ?
                                 <React.Fragment>
                                     { Seats.map((s, index) => {
-                                        return <Seat_pt key = { index }>
+                                        return <Seat_pt  className = "seatParent" key = { index }>
                                             <Alphabet>{ state.alphabet[index] }</Alphabet>
                                             { s.map((i, j) => {
                                                 return <React.Fragment key = { j }>
@@ -399,7 +435,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                                     { i === 1 ?
                                                         <React.Fragment>
                                                             { index === 0 ?
-                                                                <Seat_div className = "seatlist" onClick = { () => selectSeat(index, j)}>
+                                                                <Seat_div className = "seatlist" onClick = { () => selectSeat(index, j) }>
                                                                     { state.inc + 1 }
                                                                     <CheckSeat>
                                                                         { j === s.length - 1 ? state.checkSeat = ((index * s.length) + 1) + state.inc : "" }
@@ -410,7 +446,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                                                     { state.checkSeat > state.seat ?
                                                                         <CheckSeat></CheckSeat>
                                                                         :
-                                                                        <Seat_div className = "seatlist" onClick = { () => selectSeat(index, j)}>
+                                                                        <Seat_div className = "seatlist" onClick = { () => selectSeat(index, j) }>
                                                                             { state.inc + 1 }
                                                                         </Seat_div>
                                                                     }
@@ -423,7 +459,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                                         :
                                                         <React.Fragment>
                                                             { index === 0 ?
-                                                                <Aisle>
+                                                                <Aisle className = "seatlist">
                                                                     { state.inc = state.inc - 1 }
                                                                 </Aisle>
                                                                 :
@@ -431,7 +467,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                                                     { index === Seats.length - 1 ?
                                                                         <CheckSeat></CheckSeat>
                                                                         : 
-                                                                        <Aisle>
+                                                                        <Aisle className = "seatlist">
                                                                             { state.checkSeat = state.checkSeat - 1 }
                                                                             { state.inc = state.inc - 1 }
                                                                         </Aisle>
@@ -449,18 +485,28 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                             }
                         </Seat>
                         <Info>
+                            <Title>티켓 매수를 선택해주세요</Title>
                             <InfoBody>
-                                <InfoBox disable = "true"/><InfoText>선택 불가</InfoText>
+                                <CheckBox className = "checkbox" type = "checkbox" value = "1" onClick = { () => TickCheck('1') }/>&nbsp;<InfoText>1</InfoText>
+                                <CheckBox className = "checkbox" type = "checkbox" value = "2" onClick = { () => TickCheck('2') }/>&nbsp;<InfoText>2</InfoText>
+                                <CheckBox className = "checkbox" type = "checkbox" value = "3" onClick = { () => TickCheck('3') }/>&nbsp;<InfoText>3</InfoText>
+                                <CheckBox className = "checkbox" type = "checkbox" value = "4" onClick = { () => TickCheck('4') }/>&nbsp;<InfoText>4</InfoText>
+                                <CheckBox className = "checkbox" type = "checkbox" value = "5" onClick = { () => TickCheck('5') }/>&nbsp;<InfoText>5</InfoText>
+                                <CheckBox className = "checkbox" type = "checkbox" value = "6" onClick = { () => TickCheck('6') }/>&nbsp;<InfoText>6</InfoText>
+                            </InfoBody>
+                            <hr/>
+                            <InfoBody>
+                                <InfoBox disable = "true"/><InfoText info = "true">선택 불가</InfoText>
                             </InfoBody>
                             <InfoBody>
-                                <InfoBox disable = "false"/><InfoText>예매 가능</InfoText>
+                                <InfoBox disable = "false"/><InfoText info = "true">예매 가능</InfoText>
                             </InfoBody>
                             <InfoBody>
-                                <InfoBox/><InfoText>선택</InfoText>
+                                <InfoBox/><InfoText info = "true">선택</InfoText>
                             </InfoBody>
                         </Info>
                         <Title small = 'true'>지역: { popData[1] }&emsp;극장: { popData[2] }&emsp;&emsp;{ popData[10] }</Title>
-                        <Title>
+                        <Title small = 'false'>
                             { popData[6] }&emsp;&emsp;
                             { popData[4].substring(0, 4) + "." + popData[4].substring(4, 6) + "." + popData[4].substring(6, 8) + "(" + popData[3] + ")"}&emsp;&emsp;
                             { popData[7].substring(0, 2) + " : " + popData[7].substring(2, 4) + " ~ " }
@@ -473,6 +519,68 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
             }
         </React.Fragment>
     )
+}
+
+const TickCheck = (check) => {
+    var checkbox = document.querySelectorAll(".checkbox");
+    var selectSeats = document.querySelectorAll(".seatlist");
+    state.ticketNum = 0;
+    state.seatCnt = 0;
+
+    for(var i = 0; i < selectSeats.length; i++) {
+        selectSeats[i].style.backgroundColor = 'transparent';
+        selectSeats[i].style.color = '#666';
+    }
+
+    if(checkbox[0].checked === false &&
+        checkbox[1].checked === false &&
+        checkbox[2].checked === false &&
+        checkbox[3].checked === false &&
+        checkbox[4].checked === false &&
+        checkbox[5].checked === false) {
+            state.selectSeat = false;
+    } else {
+        for(var i = 0; i < checkbox.length; i++) {
+            if(checkbox[i].value != check) {
+                checkbox[i].checked = false;
+            }
+        }
+        state.selectSeat = true;
+        state.ticketNum = check;
+    }
+}
+
+const selectSeat = (parent, index) => {
+    var selectParents = document.querySelectorAll(".seatParent");
+    var selectSeats = selectParents[parent].querySelectorAll(".seatlist");
+    state.ticketNum = parseInt(state.ticketNum);
+    console.log(state.seatCnt);
+
+    if(state.selectSeat === true) {
+        for(var i = 0; i < selectSeats.length; i++) {
+            if(index === i) {
+                if(selectSeats[index].style.backgroundColor === 'rgb(51, 51, 51)') {
+                    selectSeats[index].style.backgroundColor = 'transparent';
+                    selectSeats[index].style.color = '#666';
+                    state.seatCnt--;
+                } else {
+                    if(state.seatCnt != state.ticketNum) {
+                        selectSeats[index].style.backgroundColor = '#333';
+                        selectSeats[index].style.color = 'white';
+                    }
+                    state.seatCnt++;
+                }
+                if(state.ticketNum < state.seatCnt) {
+                    alert("더이상 고를 수 없습니다.");
+                    state.selectSeat = false;
+                }
+            }
+        }
+    } else if(state.selectSeat === false && state.ticketNum < state.seatCnt) {
+        alert("더이상 고를 수 없습니다.");
+    } else {
+        alert("티켓 매수를 먼저 체크해주세요.");
+    }
 }
 
 export default ReservePop;
