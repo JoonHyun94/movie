@@ -29,7 +29,7 @@ const CloseModal = styled.div`
     top: 0.5vw;
     left: 96%;
     margin-top: 0.5vw;
-    margin-bottom: 2vw;
+    margin-bottom: 1vw;
     margin-right: 0;
     width: 2vw;
     height: 2vw;
@@ -65,7 +65,7 @@ const ReserveMain = styled.div`
     width: 100%;
 `
 const Info = styled.div`
-    margin-top: 3vw;
+    width: 20%;
     text-align: justify;
     font-size: 1.2vw;
     line-height: 2vw;
@@ -73,7 +73,8 @@ const Info = styled.div`
 const InfoBody = styled.div`
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 2vw;
+    position: relative;
+    margin-bottom: 0.5vw;
     width: 100%;
 `
 const InfoBox = styled.div`
@@ -103,59 +104,36 @@ const InfoBox = styled.div`
     };
 `
 const CheckBox = styled.input`
-    width: 1.5vw;
-    height: 1.5vw;
+    height: 2vw;
     margin-bottom: 0.2vw;
 `
+const CheckBoxBody = styled.div`
+    display: flex;
+    width: 70%;
+    position: absolute;
+    right: 0;
+`
 const InfoText = styled.div`
-    width: ${ 
+    margin-left: ${ 
         props => {
             switch(props.info) {
                 case 'true' :
-                    return '80%';
+                    return '0.5vw';
                 default : 
-                    return '10%';
+                    return '0.1vw';
             }
         }
     };
-    margin-left: 0.5vw;
     font-size: 0.8vw;
-    line-height: ${ 
-        props => {
-            switch(props.info) {
-                case 'true' :
-                    return '2vw';
-                default : 
-                    return '1.5vw';
-            }
-        }
-    };
+    line-height: 2vw;
+`
+const TitleBody = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    margin-bottom: 2vw;
 `
 const Title = styled.div`
-    margin-top: ${ 
-        props => {
-            switch(props.small) {
-                case 'true' :
-                    return '2vw';
-                case 'false' :
-                    return '0';
-                default : 
-                    return '0';
-            }
-        }
-    };
-    margin-bottom: ${ 
-        props => {
-            switch(props.small) {
-                case 'true' :
-                    return '0';
-                case 'false' :
-                    return '5vw'
-                default : 
-                    return '0.5vw';
-            }
-        }
-    };
     margin-left: ${ 
         props => {
             switch(props.small) {
@@ -169,14 +147,25 @@ const Title = styled.div`
         }
     };
     width: 100%;
-    text-align: justify;
+    text-align: ${ 
+        props => {
+            switch(props.small) {
+                case 'true' :
+                    return 'justify';
+                case 'false' :
+                    return 'justify'
+                default : 
+                    return 'center';
+            }
+        }
+    };
     font-size: ${ 
         props => {
             switch(props.small) {
                 case 'true' :
                     return '0.9vw';
                 case 'false' :
-                    return '1.5vw'
+                    return '1.2vw'
                 default : 
                     return '1vw';
             }
@@ -193,6 +182,16 @@ const Title = styled.div`
         }
     };
     line-height: 2vw;
+`
+const SelectSeatInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #333;
+    margin-bottom: 2vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
 `
 const Seat = styled.div`
     position: relative;
@@ -218,7 +217,6 @@ const Seat_pt = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
 `
 const Alphabet = styled.div`
     position: absolute;
@@ -249,7 +247,33 @@ const CheckSeat = styled.div`
     clip: rect(1px, 1px, 1px, 1px);
     clip-path:inset(50%);
 `
-
+const Button = styled.button`
+    position: relative;
+    left: 83%;
+    bottom: 2vw;
+    cursor: pointer;
+    width: 10%;
+    height: 10%;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7vw;
+    background-color: #F5DA81;
+    white-space: pre;
+    font-family: NanumGothic;
+    font-size: 1vw;
+    transition: all 0.8s, color 0.8s; // 마우스오버 시 box-shadow 0.8s, 텍스트 색깔 0.8s 설정
+    &:hover {
+        color: #fff;
+        // box-shadow:  x-positon(가로) +-150px로 양옆으로 그림자생성, 
+        //              y-position(세로) 0,
+        //              blur(흐림) 0, 
+        //              spread(그림자 확장) 0, 
+        //              color(색상) rgba로 투명도 적용, 
+        //              inset 안쪽에만 적용
+        box-shadow: 250px 0 0 0 rgba(0,0,0,0.25) inset, 
+                    -250px 0 0 0 rgba(0,0,0,0.25) inset;
+    }
+`
 //좌석정보 초기값(0 : 통로, 1 : 예약가능 좌석, 2 : 예약완료 좌석) 
 var Seats;
 
@@ -268,6 +292,8 @@ var state = {
     selectSeat: false,
     ticketNum: 0,
     seatCnt: 0,
+    ticketAge: false,
+    ageCheck: '',
     alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' ,'K', 'L', 'M', 'N', 'O', 'P']
 }
 
@@ -298,6 +324,9 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                 background-color: #F9F5EA;
                 box-shadow: 0px 3px 6px rgba(0,0,0,0.16);
                 animation: ${ widthTransition } 0.3s;
+                @media only screen and (orientation: portrait) {
+                    height: 70vh;
+                }
             `
 
             state.count = 1;
@@ -394,6 +423,25 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                 <Modalbody id = "modal">
                     <CloseModal onClick = { modalClose }/>
                     <ReserveMain>
+                        <TitleBody>
+                            <Title small = 'false'>
+                                { popData[6] }&emsp;&emsp;
+                            </Title>
+                            <Title small = 'true'>{ popData[10].substring(0, popData[10].length - 8) }</Title>
+                            <Title small = 'false'>
+                                { popData[4].substring(0, 4) + "." + popData[4].substring(4, 6) + "." + popData[4].substring(6, 8) + "(" + popData[3] + ")"}&emsp;
+                                { popData[7].substring(0, 2) + " : " + popData[7].substring(2, 4) + " ~ " }
+                                { state.endTime.substring(0, 2) + " : " + state.endTime.substring(2, 4)  }
+                            </Title>
+                        </TitleBody>
+                        <SelectSeatInfo>
+                                <InfoText>선택된 좌석 수</InfoText>
+                                <Title>{ state.seatCnt }</Title>
+                        </SelectSeatInfo>
+                        <SelectSeatInfo>
+                                <InfoText>남은좌석</InfoText>
+                                <Title>{ popData[10].substring(popData[10].length - 4, popData[10].length) }&nbsp;/&nbsp;{ popData[10].substring(popData[10].length - 4, popData[10].length) }</Title>
+                        </SelectSeatInfo>
                         <Seat>
                             <Screen>Screen</Screen>
                             { state.count === 1 ?
@@ -487,12 +535,34 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                         <Info>
                             <Title>티켓 매수를 선택해주세요</Title>
                             <InfoBody>
-                                <CheckBox className = "checkbox" type = "checkbox" value = "1" onClick = { () => TickCheck('1') }/>&nbsp;<InfoText>1</InfoText>
-                                <CheckBox className = "checkbox" type = "checkbox" value = "2" onClick = { () => TickCheck('2') }/>&nbsp;<InfoText>2</InfoText>
-                                <CheckBox className = "checkbox" type = "checkbox" value = "3" onClick = { () => TickCheck('3') }/>&nbsp;<InfoText>3</InfoText>
-                                <CheckBox className = "checkbox" type = "checkbox" value = "4" onClick = { () => TickCheck('4') }/>&nbsp;<InfoText>4</InfoText>
-                                <CheckBox className = "checkbox" type = "checkbox" value = "5" onClick = { () => TickCheck('5') }/>&nbsp;<InfoText>5</InfoText>
-                                <CheckBox className = "checkbox" type = "checkbox" value = "6" onClick = { () => TickCheck('6') }/>&nbsp;<InfoText>6</InfoText>
+                                <InfoText>어린이</InfoText>
+                                <CheckBoxBody>
+                                    <CheckBox className = "checkbox1" type = "checkbox" value = "1" onClick = { () => TickCheck('1', 'child') }/><InfoText>1</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox1" type = "checkbox" value = "2" onClick = { () => TickCheck('2', 'child') }/><InfoText>2</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox1" type = "checkbox" value = "3" onClick = { () => TickCheck('3', 'child') }/><InfoText>3</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox1" type = "checkbox" value = "4" onClick = { () => TickCheck('4', 'child') }/><InfoText>4</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox1" type = "checkbox" value = "5" onClick = { () => TickCheck('5', 'child') }/><InfoText>5</InfoText>&nbsp;
+                                </CheckBoxBody>
+                            </InfoBody>
+                            <InfoBody>
+                                <InfoText>청소년</InfoText>
+                                <CheckBoxBody>
+                                    <CheckBox className = "checkbox2" type = "checkbox" value = "1" onClick = { () => TickCheck('1', 'teenager') }/><InfoText>1</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox2" type = "checkbox" value = "2" onClick = { () => TickCheck('2', 'teenager') }/><InfoText>2</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox2" type = "checkbox" value = "3" onClick = { () => TickCheck('3', 'teenager') }/><InfoText>3</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox2" type = "checkbox" value = "4" onClick = { () => TickCheck('4', 'teenager') }/><InfoText>4</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox2" type = "checkbox" value = "5" onClick = { () => TickCheck('5', 'teenager') }/><InfoText>5</InfoText>&nbsp;
+                                </CheckBoxBody>
+                            </InfoBody>
+                            <InfoBody>
+                                <InfoText>일반</InfoText>
+                                <CheckBoxBody>
+                                    <CheckBox className = "checkbox3" type = "checkbox" value = "1" onClick = { () => TickCheck('1', 'adult') }/><InfoText>1</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox3" type = "checkbox" value = "2" onClick = { () => TickCheck('2', 'adult') }/><InfoText>2</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox3" type = "checkbox" value = "3" onClick = { () => TickCheck('3', 'adult') }/><InfoText>3</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox3" type = "checkbox" value = "4" onClick = { () => TickCheck('4', 'adult') }/><InfoText>4</InfoText>&nbsp;
+                                    <CheckBox className = "checkbox3" type = "checkbox" value = "5" onClick = { () => TickCheck('5', 'adult') }/><InfoText>5</InfoText>&nbsp;
+                                </CheckBoxBody>
                             </InfoBody>
                             <hr/>
                             <InfoBody>
@@ -505,13 +575,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                 <InfoBox/><InfoText info = "true">선택</InfoText>
                             </InfoBody>
                         </Info>
-                        <Title small = 'true'>지역: { popData[1] }&emsp;극장: { popData[2] }&emsp;&emsp;{ popData[10] }</Title>
-                        <Title small = 'false'>
-                            { popData[6] }&emsp;&emsp;
-                            { popData[4].substring(0, 4) + "." + popData[4].substring(4, 6) + "." + popData[4].substring(6, 8) + "(" + popData[3] + ")"}&emsp;&emsp;
-                            { popData[7].substring(0, 2) + " : " + popData[7].substring(2, 4) + " ~ " }
-                            { state.endTime.substring(0, 2) + " : " + state.endTime.substring(2, 4)  }
-                        </Title>
+                        <Button>결제하기</Button>
                     </ReserveMain>
                 </Modalbody>
             </React.Fragment>
@@ -521,33 +585,103 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
     )
 }
 
-const TickCheck = (check) => {
-    var checkbox = document.querySelectorAll(".checkbox");
+const TickCheck = (check, age) => {
+    var checkbox1 = document.querySelectorAll(".checkbox1");
+    var checkbox2 = document.querySelectorAll(".checkbox2");
+    var checkbox3 = document.querySelectorAll(".checkbox3");
+
     var selectSeats = document.querySelectorAll(".seatlist");
-    state.ticketNum = 0;
     state.seatCnt = 0;
+    state.ageCheck = age;
+
+    if(state.ticketAge === false) {
+        state.ticketNum = 0;
+    }
+
+    state.ticketNum = parseInt(state.ticketNum);
 
     for(var i = 0; i < selectSeats.length; i++) {
         selectSeats[i].style.backgroundColor = 'transparent';
         selectSeats[i].style.color = '#666';
     }
-
-    if(checkbox[0].checked === false &&
-        checkbox[1].checked === false &&
-        checkbox[2].checked === false &&
-        checkbox[3].checked === false &&
-        checkbox[4].checked === false &&
-        checkbox[5].checked === false) {
-            state.selectSeat = false;
-    } else {
-        for(var i = 0; i < checkbox.length; i++) {
-            if(checkbox[i].value != check) {
-                checkbox[i].checked = false;
+    if(age === 'child') {
+        state.ticketAge = true;
+        if(checkbox1[0].checked === false &&
+            checkbox1[1].checked === false &&
+            checkbox1[2].checked === false &&
+            checkbox1[3].checked === false &&
+            checkbox1[4].checked === false ) {
+                state.selectSeat = false;
+                state.ticketAge = false;
+                for(var i = 0; i < checkbox2.length; i++) {
+                    checkbox2[i].checked = false;
+                }
+                for(var i = 0; i < checkbox3.length; i++) {
+                    checkbox3[i].checked = false;
+                }
+        } else {
+            for(var i = 0; i < checkbox1.length; i++) {
+                if(checkbox1[i].value != check) {
+                    checkbox1[i].checked = false;
+                }
             }
+            state.selectSeat = true;
+            check = parseInt(check);
+            state.ticketNum = state.ticketNum + check;
         }
-        state.selectSeat = true;
-        state.ticketNum = check;
+    } else if(age === 'teenager') {
+        state.ticketAge = true;
+        if(checkbox2[0].checked === false &&
+            checkbox2[1].checked === false &&
+            checkbox2[2].checked === false &&
+            checkbox2[3].checked === false &&
+            checkbox2[4].checked === false ) {
+                state.selectSeat = false;
+                state.ticketAge = false;
+                for(var i = 0; i < checkbox1.length; i++) {
+                    checkbox1[i].checked = false;
+                }
+                for(var i = 0; i < checkbox3.length; i++) {
+                    checkbox3[i].checked = false;
+                }
+        } else {
+            for(var i = 0; i < checkbox2.length; i++) {
+                if(checkbox2[i].value != check) {
+                    checkbox2[i].checked = false;
+                }
+            }
+            state.selectSeat = true;
+            check = parseInt(check);
+            state.ticketNum = state.ticketNum + check;
+        }
+    } else {
+        state.ticketAge = true;
+        if(checkbox3[0].checked === false &&
+            checkbox3[1].checked === false &&
+            checkbox3[2].checked === false &&
+            checkbox3[3].checked === false &&
+            checkbox3[4].checked === false ) {
+                state.selectSeat = false;
+                state.ticketAge = false;
+                for(var i = 0; i < checkbox1.length; i++) {
+                    checkbox1[i].checked = false;
+                }
+                for(var i = 0; i < checkbox2.length; i++) {
+                    checkbox2[i].checked = false;
+                }
+        } else {
+            for(var i = 0; i < checkbox3.length; i++) {
+                if(checkbox3[i].value != check) {
+                    checkbox3[i].checked = false;
+                }
+            }
+            state.selectSeat = true;
+            check = parseInt(check);
+            state.ticketNum = state.ticketNum + check;
+        }
     }
+    
+    console.log(state.ticketNum);
 }
 
 const selectSeat = (parent, index) => {
@@ -572,11 +706,12 @@ const selectSeat = (parent, index) => {
                 }
                 if(state.ticketNum < state.seatCnt) {
                     alert("더이상 고를 수 없습니다.");
+                    state.seatCnt--;
                     state.selectSeat = false;
                 }
             }
         }
-    } else if(state.selectSeat === false && state.ticketNum < state.seatCnt) {
+    } else if(state.selectSeat === false && state.ticketNum === state.seatCnt && (state.ticketNum && state.seatCnt != 0)) {
         alert("더이상 고를 수 없습니다.");
     } else {
         alert("티켓 매수를 먼저 체크해주세요.");
