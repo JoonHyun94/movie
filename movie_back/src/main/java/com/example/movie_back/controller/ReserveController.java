@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.example.movie_back.dto.ReserveVO;
 import com.example.movie_back.service.reserve.face.ReserveService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,5 +132,27 @@ public class ReserveController {
 
         getReserveInfo = reserveService.getReserveInfo();
         return getReserveInfo;
+    }
+
+    @PostMapping("/payment")
+    public void payment(HttpServletRequest req, Model model) {
+        int ticket_number = Integer.parseInt(req.getParameter("ticketnumber"));
+        int ticekt_price = Integer.parseInt(req.getParameter("price"));
+        // tprrReserve 확인
+        model.addAttribute("id", req.getParameter("id"));
+        model.addAttribute("area", req.getParameter("area"));
+        model.addAttribute("theater", req.getParameter("theater"));
+        model.addAttribute("week", req.getParameter("week"));
+        model.addAttribute("day", req.getParameter("day"));
+        model.addAttribute("title", req.getParameter("title"));
+        model.addAttribute("time", req.getParameter("time"));
+        // tprrReserve 추가
+        model.addAttribute("endtime", req.getParameter("endtime"));
+        model.addAttribute("selectseat", req.getParameter("selectseat"));
+        model.addAttribute("ticketnumber", ticket_number);
+        model.addAttribute("price", ticekt_price);
+
+        reserveService.addReserveInfo(model);
+        System.out.println(model);
     }
 } 

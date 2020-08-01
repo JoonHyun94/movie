@@ -296,4 +296,24 @@ public class ReserveServiceImpl implements ReserveService{
         String ss = reserveDao.selectReserveTprr();
         return result;
     }
+
+    @Override
+    public void addReserveInfo(Model model){
+        boolean result;
+        String check;
+
+        check = reserveDao.selectReserveInfo(model);
+        System.out.println(check);
+        if(check.equalsIgnoreCase("null")) {
+            result = false;
+            System.out.println("false");
+        } else {
+            result = true;
+            System.out.println("true");
+        }
+
+        if(result == true) {
+            reserveDao.addReserveInfo(model);
+        }
+    }
 }

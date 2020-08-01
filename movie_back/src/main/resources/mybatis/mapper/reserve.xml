@@ -5,22 +5,26 @@
 
     <select id = "selectReserveInfo" resultType="String">
     	SELECT NVL(MAX(id), 'null') FROM temporary_reserve
-		WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
     </select>
 
     <select id = "selectReserve" resultType="String">
     	SELECT NVL(MAX(id), 'null') FROM reserve
-		WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND start_time = #{time }
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND start_time = #{time }
     </select>
 
 	<insert id = "insertReserveInfo">
         INSERT INTO temporary_reserve
-		VALUES (#{id }, #{area }, #{theater }, #{week }, #{day }, #{grade }, #{title }, #{time }, #{runtime }, #{seat })
+			VALUES (TPRR_SEQ.NEXTVAL, #{id }, #{area }, #{theater }, #{week }, #{day }, #{grade }, #{title }, #{time }, #{runtime }, #{seat }, 'null', 'null', 0, 0)
 	</insert>
 
     <select id = "selectReserveTprr" resultType="String">
     	SELECT NVL(MAX(id), 'null') FROM temporary_reserve
-		WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
     </select>
 
+	<update id = "addReserveInfo">
+		UPDATE temporary_reserve SET end_time = #{endtime }, select_seat = #{selectseat }, ticket_number = #{ticketnumber }, ticket_price = #{price }
+			WHERE end_time = 'null' AND select_seat = 'null' AND ticket_number = 0 AND ticket_price = 0
+	</update>
 </mapper>

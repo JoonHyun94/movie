@@ -105,7 +105,6 @@ public class MainController {
         System.out.println(req.getParameter("number"));
         System.out.println(req.getParameter("email"));
         System.out.println(req.getParameter("gender"));
-        System.out.println("-------------------------");
 
         securityNumber = req.getParameter("first_security") + req.getParameter("second_security");
 
@@ -154,7 +153,7 @@ public class MainController {
             email = req.getParameter("email");
 
             memberService.sendMail(id, pw, email);
-
+            
             return mem;
         }
     }

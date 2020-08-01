@@ -5,6 +5,7 @@ import MainComponent from '../main/Main';
 import ListComponent from '../main/List';
 import ReservePopComponent from '../reserve/ReservePop';
 import ReserveComponent from '../reserve/Reserve';
+import Payment from '../reserve/Payment';
 import cgv_logo from '../../image/cgv_logo.png';
 import cgv_header from '../../image/header.png';
 import styled from 'styled-components';
@@ -74,7 +75,7 @@ class TopMenuComponent extends Component {
     render() { 
         return ( 
             <Router>
-                { window.location.href === window.location.protocol + "//" + window.location.host + "/reserve_pop" ?
+                { window.location.href === window.location.protocol + "//" + window.location.host + "/kakaopay" ?
                 ""
                 :    
                 <Header id = "nav_var" className="nav_var">
@@ -98,6 +99,7 @@ class TopMenuComponent extends Component {
                 <Route path="/list" component = { ListComponent }/>
                 <Route path="/reserve" component = { ReserveComponent }/>
                 <Route path="/reserve_pop" component = { ReservePopComponent }/>
+                <Route path="/payment" component = { Payment }/>
             </Router>
         ) 
     } 

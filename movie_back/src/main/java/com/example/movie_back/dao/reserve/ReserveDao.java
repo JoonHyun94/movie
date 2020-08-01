@@ -13,4 +13,6 @@ public interface ReserveDao {
     public void insertReserveInfo(Model model);
 
     public String selectReserveTprr();
+
+    public void addReserveInfo(Model model);
 }

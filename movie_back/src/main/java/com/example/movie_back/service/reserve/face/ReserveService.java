@@ -22,4 +22,6 @@ public interface ReserveService {
     public void setReserveInfo(Model model);
 
     public HashMap<String,String> getReserveInfo();
+
+    public void addReserveInfo(Model model);
 }

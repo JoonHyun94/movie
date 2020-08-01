@@ -670,7 +670,7 @@ class Reserve extends Component {
         form.append('area', this.state.selectArea)
         form.append('theater', this.state.selectTheater)
         form.append('week', this.state.selectWeek)
-        form.append('day', this.state.selectDay)
+        form.append('day', this.state.selectDate.substring(4, this.state.selectDate.length))
         form.append('grade', this.state.selectGrade)
         form.append('title', this.state.selectTitle)
         form.append('time', this.state.selectTime)

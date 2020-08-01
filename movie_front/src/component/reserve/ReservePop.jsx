@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import axios from "axios";
 import styled, { keyframes } from 'styled-components';
 import { generateMedia } from 'styled-media-query';
-import { jssPreset } from "@material-ui/core";
 
 // 반응형 웹
 const customMedia = generateMedia({
@@ -70,6 +69,15 @@ const Info = styled.div`
     font-size: 1.2vw;
     line-height: 2vw;
 `
+const InfoDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+`
+const InfoRows = styled.div`
+    display: flex;
+    flex-direction: row;
+`
 const InfoBody = styled.div`
     display: flex;
     flex-wrap: wrap;
@@ -109,7 +117,6 @@ const CheckBox = styled.input`
 `
 const CheckBoxBody = styled.div`
     display: flex;
-    width: 70%;
     position: absolute;
     right: 0;
 `
@@ -165,7 +172,9 @@ const Title = styled.div`
                 case 'true' :
                     return '0.9vw';
                 case 'false' :
-                    return '1.2vw'
+                    return '1.2vw';
+                case 'seat' :
+                    return '0.7vw';
                 default : 
                     return '1vw';
             }
@@ -175,6 +184,8 @@ const Title = styled.div`
         props => {
             switch(props.small) {
                 case 'true' :
+                    return 'none';
+                case 'price' :
                     return 'none';
                 default : 
                     return 'bold';
@@ -188,10 +199,12 @@ const SelectSeatInfo = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    height: 6vw;
     border-left: 1px solid #333;
     margin-bottom: 2vw;
     padding-left: 2vw;
     padding-right: 2vw;
+    word-wrap: break-word;
 `
 const Seat = styled.div`
     position: relative;
@@ -205,15 +218,22 @@ const Seat = styled.div`
 `
 const Screen = styled.div`
     margin: 0 auto;
-    margin-bottom: 3vw;
+    margin-bottom: 1vw;
     width: 100%;
-    height: 2.5vw;
+    height: 1.5vw;
     background-color: #78A9AD;
     border-radius: 5px;
-    line-height: 2.5vw;
+    line-height: 1.5vw;
+    font-size: 0.8vw;
+`
+const SeatBody = styled.div`
+    position: absolute;
+    top: 3vw;
+    width: 100%;
 `
 const Seat_pt = styled.div`
     width: 100%;
+    height: 2.5vh;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -222,8 +242,8 @@ const Alphabet = styled.div`
     position: absolute;
     left: -1vw;
     font-size: 0.7vw;
-    height: 2vw;
-    line-height: 2vw;
+    height: 1.5vw;
+    line-height: 1.5vw;
 `
 var Seat_div = styled.div`
     display: flex;
@@ -246,6 +266,44 @@ const CheckSeat = styled.div`
     width: 0%;
     clip: rect(1px, 1px, 1px, 1px);
     clip-path:inset(50%);
+`
+const Price = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    width: 50%;
+`
+const PriceInfo = styled.div`
+    position: relative;
+    width: 100%;
+    border-left: 1px solid #333;
+`
+const PriceTitle = styled.div`
+    position: absolute;
+    left: ${ 
+        props => {
+            switch(props.age) {
+                case 'true' :
+                    return '0';
+            }
+        }
+    };
+    right: ${ 
+        props => {
+            switch(props.age) {
+                case 'false' :
+                    return '0';
+            }
+        }
+    };
+    font-size: 0.8vw;
+    font-weight: ${ 
+        props => {
+            switch(props.age) {
+                case 'true' :
+                    return 'bold';
+            }
+        }
+    };
 `
 const Button = styled.button`
     position: relative;
@@ -294,7 +352,42 @@ var state = {
     seatCnt: 0,
     ticketAge: false,
     ageCheck: '',
-    alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' ,'K', 'L', 'M', 'N', 'O', 'P']
+    lastTicketChild: 0,
+    lastTicketTeen: 0,
+    lastTicketAdult: 0,
+    rmnngSeats: 0,
+    resultSeatCnt: 0, 
+    ticketPrice: 0,
+    alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' ,'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+    getSeat: []
+}
+
+const kakaoPay = (area, theater, time, week, day, title, endtime, selectseat, price, ticketnum, seatcnt) => {
+    if(ticketnum != seatcnt) {
+        alert("티켓 매수확인과 좌석선택을 해주세요.")
+    } else {
+        for(var i = 0; i < selectseat.length; i++) {
+            selectseat[i] = selectseat[i].substring(0, 2);
+        }
+        let form = new FormData()
+        form.append('id', window.sessionStorage.getItem("id"))
+        form.append('area', area)
+        form.append('theater', theater)
+        form.append('time',  time)
+        form.append('week', week)
+        form.append('day', day)
+        form.append('title', title)
+        form.append('endtime', endtime)
+        form.append('selectseat', selectseat)
+        form.append('ticketnumber', seatcnt)
+        form.append('price', price)
+    
+        axios.post('http://localhost:8088/payment', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
+        .then(res => {
+
+        }) 
+        .catch(res => console.log(res))
+    }
 }
 
 const ReservePop = ({ modalOpen, modalClose, popData }) => {
@@ -412,7 +505,17 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
         state.count = 0;
         state.api = 0;
         state.selectSeat = false;
+        state.ticketAge = false;
+        state.ageCheck = '';
         state.ticketNum = 100;
+        state.lastTicketChild = 0;
+        state.lastTicketTeen = 0;
+        state.lastTicketAdult = 0;
+        state.seatCnt = 0;
+        state.rmnngSeats = 0;
+        state.getSeat = [];
+        state.resultSeatCnt = 0;
+        state.ticketPrice = 0;
     }
 
     return(
@@ -439,13 +542,17 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                 <Title>{ state.seatCnt }</Title>
                         </SelectSeatInfo>
                         <SelectSeatInfo>
+                                <InfoText>선택된 좌석</InfoText>
+                                <Title small = "seat">{ state.getSeat }</Title>
+                        </SelectSeatInfo>
+                        <SelectSeatInfo>
                                 <InfoText>남은좌석</InfoText>
-                                <Title>{ popData[10].substring(popData[10].length - 4, popData[10].length) }&nbsp;/&nbsp;{ popData[10].substring(popData[10].length - 4, popData[10].length) }</Title>
+                                <Title>{ parseInt(popData[10].substring(popData[10].length - 4, popData[10].length)) - state.rmnngSeats }&nbsp;/&nbsp;{ popData[10].substring(popData[10].length - 4, popData[10].length) }</Title>
                         </SelectSeatInfo>
                         <Seat>
                             <Screen>Screen</Screen>
                             { state.count === 1 ?
-                                <React.Fragment>
+                                <SeatBody>
                                     { Seats.map((s, index) => {
                                         return <Seat_pt  className = "seatParent" key = { index }>
                                             <Alphabet>{ state.alphabet[index] }</Alphabet>
@@ -483,7 +590,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                                     { i === 1 ?
                                                         <React.Fragment>
                                                             { index === 0 ?
-                                                                <Seat_div className = "seatlist" onClick = { () => selectSeat(index, j) }>
+                                                                <Seat_div className = "seatlist" onClick = { () => selectSeat(index, j, state.alphabet[index]) }>
                                                                     { state.inc + 1 }
                                                                     <CheckSeat>
                                                                         { j === s.length - 1 ? state.checkSeat = ((index * s.length) + 1) + state.inc : "" }
@@ -494,7 +601,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                                                     { state.checkSeat > state.seat ?
                                                                         <CheckSeat></CheckSeat>
                                                                         :
-                                                                        <Seat_div className = "seatlist" onClick = { () => selectSeat(index, j) }>
+                                                                        <Seat_div className = "seatlist" onClick = { () => selectSeat(index, j, state.alphabet[index]) }>
                                                                             { state.inc + 1 }
                                                                         </Seat_div>
                                                                     }
@@ -528,7 +635,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                             })}
                                         </Seat_pt>
                                     })}
-                                </React.Fragment>
+                                </SeatBody>
                             : ""
                             }
                         </Seat>
@@ -565,17 +672,44 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                                 </CheckBoxBody>
                             </InfoBody>
                             <hr/>
-                            <InfoBody>
-                                <InfoBox disable = "true"/><InfoText info = "true">선택 불가</InfoText>
-                            </InfoBody>
-                            <InfoBody>
-                                <InfoBox disable = "false"/><InfoText info = "true">예매 가능</InfoText>
-                            </InfoBody>
-                            <InfoBody>
-                                <InfoBox/><InfoText info = "true">선택</InfoText>
-                            </InfoBody>
+                            <InfoRows>
+                                <InfoDiv>
+                                    <InfoBody info = "true">
+                                        <InfoBox disable = "true"/><InfoText info = "true">선택 불가</InfoText>
+                                    </InfoBody>
+                                    <InfoBody info = "true">
+                                        <InfoBox disable = "false"/><InfoText info = "true">예매 가능</InfoText>
+                                    </InfoBody>
+                                    <InfoBody info = "true">
+                                        <InfoBox/><InfoText info = "true">선택</InfoText>
+                                    </InfoBody>
+                                </InfoDiv>
+                                <Price>
+                                    <PriceInfo>
+                                        <PriceTitle age = "true">&emsp;어린이</PriceTitle><PriceTitle age = "false">5000원</PriceTitle>
+                                    </PriceInfo>
+                                    <PriceInfo>
+                                        <PriceTitle  age = "true">&emsp;청소년</PriceTitle><PriceTitle age = "false">9000원</PriceTitle>
+                                    </PriceInfo>
+                                    <PriceInfo>
+                                        <PriceTitle  age = "true">&emsp;일반</PriceTitle><PriceTitle age = "false">12000원</PriceTitle>
+                                    </PriceInfo>
+                                </Price>
+                            </InfoRows>
                         </Info>
-                        <Button>결제하기</Button>
+                        <Button onClick = { () => kakaoPay(
+                            popData[1],
+                            popData[2],
+                            popData[7].substring(0, 4),
+                            popData[3],
+                            popData[4].substring(4, 8),
+                            popData[6],
+                            state.endTime.substring(0, 4),
+                            state.getSeat,
+                            state.ticketPrice,
+                            state.ticketNum,
+                            state.seatCnt
+                        ) }>결제하기</Button>
                     </ReserveMain>
                 </Modalbody>
             </React.Fragment>
@@ -586,17 +720,15 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
 }
 
 const TickCheck = (check, age) => {
+    console.log("ticketage : " + state.ticketAge);
+    console.log("first : " + state.ageCheck);
+
     var checkbox1 = document.querySelectorAll(".checkbox1");
     var checkbox2 = document.querySelectorAll(".checkbox2");
     var checkbox3 = document.querySelectorAll(".checkbox3");
 
     var selectSeats = document.querySelectorAll(".seatlist");
     state.seatCnt = 0;
-    state.ageCheck = age;
-
-    if(state.ticketAge === false) {
-        state.ticketNum = 0;
-    }
 
     state.ticketNum = parseInt(state.ticketNum);
 
@@ -604,15 +736,30 @@ const TickCheck = (check, age) => {
         selectSeats[i].style.backgroundColor = 'transparent';
         selectSeats[i].style.color = '#666';
     }
+
     if(age === 'child') {
-        state.ticketAge = true;
+        state.ageCheck = age;
+        if(state.ticketAge === false) {
+            state.ticketNum = 0;
+            state.ticketAge = true;
+        }
         if(checkbox1[0].checked === false &&
             checkbox1[1].checked === false &&
             checkbox1[2].checked === false &&
             checkbox1[3].checked === false &&
             checkbox1[4].checked === false ) {
                 state.selectSeat = false;
-                state.ticketAge = false;
+                state.seatCnt = 0;
+                state.ticketNum = 0;
+                check = 0;
+                state.lastTicketChild = 0;
+                state.lastTicketTeen = 0;
+                state.lastTicketAdult = 0;
+                state.ageCheck = '';
+                state.getSeat = [];
+                state.rmnngSeats = 0;
+                state.resultSeatCnt = 0;
+                state.ticketPrice = 0;
                 for(var i = 0; i < checkbox2.length; i++) {
                     checkbox2[i].checked = false;
                 }
@@ -625,19 +772,41 @@ const TickCheck = (check, age) => {
                     checkbox1[i].checked = false;
                 }
             }
+            if (age === state.ageCheck) {
+                state.ticketNum -= state.lastTicketChild;
+                state.ticketPrice -= 5000 * state.lastTicketChild;
+                state.getSeat = [];
+                state.rmnngSeats = 0;
+            }
             state.selectSeat = true;
-            check = parseInt(check);
-            state.ticketNum = state.ticketNum + check;
         }
+        check = parseInt(check);
+        state.ticketNum = state.ticketNum + check;
+        state.lastTicketChild = check;
+        state.ticketPrice += 5000 * check;
     } else if(age === 'teenager') {
-        state.ticketAge = true;
+        state.ageCheck = age;
+        if(state.ticketAge === false) {
+            state.ticketNum = 0;
+            state.ticketAge = true;
+        }
         if(checkbox2[0].checked === false &&
             checkbox2[1].checked === false &&
             checkbox2[2].checked === false &&
             checkbox2[3].checked === false &&
             checkbox2[4].checked === false ) {
                 state.selectSeat = false;
-                state.ticketAge = false;
+                state.seatCnt = 0;
+                state.ticketNum = 0;
+                check = 0;
+                state.lastTicketChild = 0;
+                state.lastTicketTeen = 0;
+                state.lastTicketAdult = 0;
+                state.ageCheck = '';
+                state.getSeat = [];
+                state.rmnngSeats = 0;
+                state.resultSeatCnt = 0;
+                state.ticketPrice = 0;
                 for(var i = 0; i < checkbox1.length; i++) {
                     checkbox1[i].checked = false;
                 }
@@ -650,19 +819,41 @@ const TickCheck = (check, age) => {
                     checkbox2[i].checked = false;
                 }
             }
+            if (age === state.ageCheck) {
+                state.ticketNum -= state.lastTicketTeen;
+                state.ticketPrice -= 9000 * state.lastTicketTeen;
+                state.getSeat = [];
+                state.rmnngSeats = 0;
+            }
             state.selectSeat = true;
-            check = parseInt(check);
-            state.ticketNum = state.ticketNum + check;
         }
+        check = parseInt(check);
+        state.ticketNum = state.ticketNum + check;
+        state.lastTicketTeen = check;
+        state.ticketPrice += 9000 * check;
     } else {
-        state.ticketAge = true;
+        state.ageCheck = age;
+        if(state.ticketAge === false) {
+            state.ticketNum = 0;
+            state.ticketAge = true;
+        }
         if(checkbox3[0].checked === false &&
             checkbox3[1].checked === false &&
             checkbox3[2].checked === false &&
             checkbox3[3].checked === false &&
             checkbox3[4].checked === false ) {
                 state.selectSeat = false;
-                state.ticketAge = false;
+                state.seatCnt = 0;
+                state.ticketNum = 0;
+                check = 0;
+                state.lastTicketChild = 0;
+                state.lastTicketTeen = 0;
+                state.lastTicketAdult = 0;
+                state.ageCheck = '';
+                state.getSeat = [];
+                state.rmnngSeats = 0;
+                state.resultSeatCnt = 0;
+                state.ticketPrice = 0;
                 for(var i = 0; i < checkbox1.length; i++) {
                     checkbox1[i].checked = false;
                 }
@@ -675,16 +866,26 @@ const TickCheck = (check, age) => {
                     checkbox3[i].checked = false;
                 }
             }
+            if (age === state.ageCheck) {
+                state.ticketNum -= state.lastTicketAdult;
+                state.ticketPrice -= 12000 * state.lastTicketAdult;
+                state.getSeat = [];
+                state.rmnngSeats = 0;
+            }
             state.selectSeat = true;
-            check = parseInt(check);
-            state.ticketNum = state.ticketNum + check;
         }
+        check = parseInt(check);
+        state.ticketNum = state.ticketNum + check;
+        state.lastTicketAdult = check;
+        state.ticketPrice += 12000 * check;
     }
     
     console.log(state.ticketNum);
+    console.log("last : " + state.ageCheck);
+    console.log(state.ticketPrice);
 }
 
-const selectSeat = (parent, index) => {
+const selectSeat = (parent, index, alphabet) => {
     var selectParents = document.querySelectorAll(".seatParent");
     var selectSeats = selectParents[parent].querySelectorAll(".seatlist");
     state.ticketNum = parseInt(state.ticketNum);
@@ -694,25 +895,49 @@ const selectSeat = (parent, index) => {
         for(var i = 0; i < selectSeats.length; i++) {
             if(index === i) {
                 if(selectSeats[index].style.backgroundColor === 'rgb(51, 51, 51)') {
+                    state.seatCnt--;
                     selectSeats[index].style.backgroundColor = 'transparent';
                     selectSeats[index].style.color = '#666';
-                    state.seatCnt--;
+                    for(var j = 0; j < state.getSeat.length; j++) {
+                        if(state.getSeat[j] === (alphabet + selectSeats[i].textContent + ',')) {
+                            state.getSeat.splice(j, 1);
+                        }
+                    }
                 } else {
-                    if(state.seatCnt != state.ticketNum) {
+                    if(state.seatCnt != state.ticketNum && state.seatCnt < state.ticketNum) {
                         selectSeats[index].style.backgroundColor = '#333';
                         selectSeats[index].style.color = 'white';
+                        state.getSeat[state.resultSeatCnt] = alphabet + selectSeats[index].textContent + ',';
+                        console.log("state.getSeat : " + state.getSeat[state.resultSeatCnt]);
+                        state.resultSeatCnt++;
                     }
                     state.seatCnt++;
                 }
                 if(state.ticketNum < state.seatCnt) {
-                    alert("더이상 고를 수 없습니다.");
                     state.seatCnt--;
                     state.selectSeat = false;
-                }
+                    alert("더이상 고를 수 없습니다.");
+                } 
             }
         }
+        state.rmnngSeats = parseInt(state.seatCnt);
     } else if(state.selectSeat === false && state.ticketNum === state.seatCnt && (state.ticketNum && state.seatCnt != 0)) {
-        alert("더이상 고를 수 없습니다.");
+        if(selectSeats[index].style.backgroundColor === 'rgb(51, 51, 51)') {
+            state.seatCnt--;
+            state.selectSeat = true;
+            selectSeats[index].style.backgroundColor = 'transparent';
+            selectSeats[index].style.color = '#666';
+            state.rmnngSeats = parseInt(state.seatCnt);
+            for(var i = 0; i < selectSeats.length; i++) {
+                for(var j = 0; j < state.getSeat.length; j++) {
+                    if(state.getSeat[j] === (alphabet + selectSeats[i].textContent + ',')) {
+                        state.getSeat.splice(j, 1);
+                    }
+                }
+            }
+        } else {
+            alert("더이상 고를 수 없습니다.");
+        }
     } else {
         alert("티켓 매수를 먼저 체크해주세요.");
     }
