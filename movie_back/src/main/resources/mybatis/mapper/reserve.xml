@@ -27,4 +27,19 @@
 		UPDATE temporary_reserve SET end_time = #{endtime }, select_seat = #{selectseat }, ticket_number = #{ticketnumber }, ticket_price = #{price }
 			WHERE end_time = 'null' AND select_seat = 'null' AND ticket_number = 0 AND ticket_price = 0
 	</update>
+
+	<select id = "selectUser" parameterType="String" resultType="com.example.movie_back.dto.MemberVO">
+		SELECT * FROM member
+		WHERE id = #{id }
+	</select>
+
+	<select id = "getTprrInfo" resultType="com.example.movie_back.dto.ReserveVO">
+    	SELECT * FROM temporary_reserve
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
+    </select>
+
+	<insert id = "insertReserve">
+        INSERT INTO reserve
+			VALUES (RESERVE_SEQ.NEXTVAL, #{id }, #{area }, #{theater }, #{week }, #{day }, #{grade }, #{title }, #{time }, #{runtime }, #{seat }, 'null', 'null', 0, 0)
+	</insert>
 </mapper>

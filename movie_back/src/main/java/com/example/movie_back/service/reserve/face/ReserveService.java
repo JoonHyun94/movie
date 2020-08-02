@@ -3,6 +3,9 @@ package com.example.movie_back.service.reserve.face;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.example.movie_back.dto.MemberVO;
+import com.example.movie_back.dto.ReserveVO;
+
 import org.springframework.ui.Model;
 
 public interface ReserveService {
@@ -24,4 +27,8 @@ public interface ReserveService {
     public HashMap<String,String> getReserveInfo();
 
     public void addReserveInfo(Model model);
+
+    public MemberVO getMemberList(String id);
+
+    public void setReserve(Model model, ReserveVO reserveVO);
 }

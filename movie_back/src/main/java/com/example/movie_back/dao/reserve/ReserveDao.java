@@ -1,5 +1,10 @@
 package com.example.movie_back.dao.reserve;
 
+import java.util.HashMap;
+
+import com.example.movie_back.dto.MemberVO;
+import com.example.movie_back.dto.ReserveVO;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 
@@ -15,4 +20,10 @@ public interface ReserveDao {
     public String selectReserveTprr();
 
     public void addReserveInfo(Model model);
+
+    public MemberVO selectUser(String id);
+
+    public ReserveVO getTprrInfo(Model model);
+
+    public void insertReserve(HashMap<String,String> result);
 }

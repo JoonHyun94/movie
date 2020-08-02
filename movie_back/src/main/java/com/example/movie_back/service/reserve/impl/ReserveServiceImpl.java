@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.example.movie_back.dao.reserve.ReserveDao;
+import com.example.movie_back.dto.MemberVO;
+import com.example.movie_back.dto.ReserveVO;
 import com.example.movie_back.service.reserve.face.ReserveService;
 
 import org.jsoup.Jsoup;
@@ -298,12 +300,12 @@ public class ReserveServiceImpl implements ReserveService{
     }
 
     @Override
-    public void addReserveInfo(Model model){
+    public void addReserveInfo(Model model) {
         boolean result;
         String check;
 
         check = reserveDao.selectReserveInfo(model);
-        System.out.println(check);
+        System.out.println("Tprr 여부: " + check);
         if(check.equalsIgnoreCase("null")) {
             result = false;
             System.out.println("false");
@@ -315,5 +317,20 @@ public class ReserveServiceImpl implements ReserveService{
         if(result == true) {
             reserveDao.addReserveInfo(model);
         }
+    }
+
+    @Override
+    public MemberVO getMemberList(String id) {
+        return reserveDao.selectUser(id);
+    }
+
+    @Override
+    public void setReserve(Model model, ReserveVO reserveVO) {
+        HashMap<String,String> result = new HashMap<String,String>();
+
+        reserveVO = reserveDao.getTprrInfo(model);
+        System.out.println(result);
+
+        // reserveDao.insertReserve(result);
     }
 }

@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.example.movie_back.dto.MemberVO;
+import com.example.movie_back.dto.ReserveVO;
 import com.example.movie_back.service.reserve.face.ReserveService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,5 +156,27 @@ public class ReserveController {
 
         reserveService.addReserveInfo(model);
         System.out.println(model);
+    }
+
+    @PostMapping("/getReserveMember")
+    public MemberVO getMem(HttpServletRequest req, MemberVO mem) {
+        String id = req.getParameter("id").toString();
+
+        mem = reserveService.getMemberList(id);
+
+        return mem;
+    }
+    
+    @PostMapping("/setReserve")
+    public void setReserve(HttpServletRequest req, Model model, ReserveVO reserveVO) {
+        model.addAttribute("id", req.getParameter("id"));
+        model.addAttribute("area", req.getParameter("area"));
+        model.addAttribute("theater", req.getParameter("theater"));
+        model.addAttribute("week", req.getParameter("week"));
+        model.addAttribute("day", req.getParameter("day"));
+        model.addAttribute("title", req.getParameter("title"));
+        model.addAttribute("time", req.getParameter("time"));
+
+        reserveService.setReserve(model, reserveVO);
     }
 } 

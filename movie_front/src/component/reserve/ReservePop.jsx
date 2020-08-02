@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import axios from "axios";
 import styled, { keyframes } from 'styled-components';
 import { generateMedia } from 'styled-media-query';
+import Payment from '../reserve/Payment';
 
 // 반응형 웹
 const customMedia = generateMedia({
@@ -332,6 +333,7 @@ const Button = styled.button`
                     -250px 0 0 0 rgba(0,0,0,0.25) inset;
     }
 `
+
 //좌석정보 초기값(0 : 통로, 1 : 예약가능 좌석, 2 : 예약완료 좌석) 
 var Seats;
 
@@ -359,7 +361,8 @@ var state = {
     resultSeatCnt: 0, 
     ticketPrice: 0,
     alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' ,'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
-    getSeat: []
+    getSeat: [],
+    modalOpen: false
 }
 
 const kakaoPay = (area, theater, time, week, day, title, endtime, selectseat, price, ticketnum, seatcnt) => {
@@ -384,10 +387,17 @@ const kakaoPay = (area, theater, time, week, day, title, endtime, selectseat, pr
     
         axios.post('http://localhost:8088/payment', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
         .then(res => {
-
+            state.payOpen = true;
         }) 
         .catch(res => console.log(res))
     }
+}
+
+const payOpen = () => {
+    state.payOpen = true;
+}
+const closePay = () => {
+    state.payOpen = false;
 }
 
 const ReservePop = ({ modalOpen, modalClose, popData }) => {
@@ -421,7 +431,6 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                     height: 70vh;
                 }
             `
-
             state.count = 1;
             state.api = 1;
         }
@@ -710,6 +719,10 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                             state.ticketNum,
                             state.seatCnt
                         ) }>결제하기</Button>
+                        <Payment payOpen = { state.payOpen } payClose = { closePay } 
+                            area = { popData[1] } theater = { popData[2] } time = { popData[7].substring(0, 4) } 
+                            week = { popData[3] } day = { popData[4].substring(4, 8) } title = { popData[6] } price = { state.ticketPrice }>
+                        </Payment>
                     </ReserveMain>
                 </Modalbody>
             </React.Fragment>
