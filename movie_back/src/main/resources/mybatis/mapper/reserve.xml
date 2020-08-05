@@ -5,7 +5,7 @@
 
     <select id = "selectReserveInfo" resultType="String">
     	SELECT NVL(MAX(id), 'null') FROM temporary_reserve
-			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND start_time = #{time }
     </select>
 
     <select id = "selectReserve" resultType="String">
@@ -15,12 +15,12 @@
 
 	<insert id = "insertReserveInfo">
         INSERT INTO temporary_reserve
-			VALUES (TPRR_SEQ.NEXTVAL, #{id }, #{area }, #{theater }, #{week }, #{day }, #{grade }, #{title }, #{time }, #{runtime }, #{seat }, 'null', 'null', 0, 0)
+			VALUES (TPRR_SEQ.NEXTVAL, #{id }, #{area }, #{theater }, #{floor }, #{week }, #{day }, #{grade }, #{title }, #{time }, #{runtime }, #{seat }, 'null', 'null', 0, 0)
 	</insert>
 
     <select id = "selectReserveTprr" resultType="String">
     	SELECT NVL(MAX(id), 'null') FROM temporary_reserve
-			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND start_time = #{time }
     </select>
 
 	<update id = "addReserveInfo">
@@ -35,11 +35,22 @@
 
 	<select id = "getTprrInfo" resultType="com.example.movie_back.dto.ReserveVO">
     	SELECT * FROM temporary_reserve
-			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND time = #{time }
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND start_time = #{time }
     </select>
 
 	<insert id = "insertReserve">
         INSERT INTO reserve
-			VALUES (RESERVE_SEQ.NEXTVAL, #{id }, #{area }, #{theater }, #{week }, #{day }, #{grade }, #{title }, #{time }, #{runtime }, #{seat }, 'null', 'null', 0, 0)
+			VALUES (RESERVE_SEQ.NEXTVAL, #{id }, #{area }, #{theater }, #{floor }, #{week }, #{day }, #{grade }, #{title }, #{start_time }, #{end_time }, SYSDATE, #{select_seat }, #{ticket_number }, #{ticket_price })
 	</insert>
+
+	<delete id = "deleteTprr">
+		DELETE FROM temporary_reserve
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND start_time = #{time }
+	</delete>
+
+	<delete id = "deleteReserve">
+		DELETE FROM reserve
+			WHERE id = #{id } AND area = #{area } AND theater = #{theater } AND day = #{day } AND title = #{title } AND reserve_time = #{reserve_time } AND ticket_number = #{ticket_number } AND ticket_price = #{ticket_price }
+	</delete>
+	
 </mapper>

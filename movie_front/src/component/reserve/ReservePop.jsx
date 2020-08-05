@@ -365,7 +365,7 @@ var state = {
     modalOpen: false
 }
 
-const kakaoPay = (area, theater, time, week, day, title, endtime, selectseat, price, ticketnum, seatcnt) => {
+const kakaoPay = (area, theater, floor, time, week, day, title, endtime, selectseat, price, ticketnum, seatcnt) => {
     if(ticketnum != seatcnt) {
         alert("티켓 매수확인과 좌석선택을 해주세요.")
     } else {
@@ -376,6 +376,7 @@ const kakaoPay = (area, theater, time, week, day, title, endtime, selectseat, pr
         form.append('id', window.sessionStorage.getItem("id"))
         form.append('area', area)
         form.append('theater', theater)
+        form.append('floor', floor)
         form.append('time',  time)
         form.append('week', week)
         form.append('day', day)
@@ -709,6 +710,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                         <Button onClick = { () => kakaoPay(
                             popData[1],
                             popData[2],
+                            popData[10],
                             popData[7].substring(0, 4),
                             popData[3],
                             popData[4].substring(4, 8),
@@ -719,7 +721,7 @@ const ReservePop = ({ modalOpen, modalClose, popData }) => {
                             state.ticketNum,
                             state.seatCnt
                         ) }>결제하기</Button>
-                        <Payment payOpen = { state.payOpen } payClose = { closePay } 
+                        <Payment payOpen = { state.payOpen } floor = { popData[10] }
                             area = { popData[1] } theater = { popData[2] } time = { popData[7].substring(0, 4) } 
                             week = { popData[3] } day = { popData[4].substring(4, 8) } title = { popData[6] } price = { state.ticketPrice }>
                         </Payment>

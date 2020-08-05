@@ -25,5 +25,9 @@ public interface ReserveDao {
 
     public ReserveVO getTprrInfo(Model model);
 
-    public void insertReserve(HashMap<String,String> result);
+    public void insertReserve(ReserveVO reserveVO);
+
+    public void deleteTprr(Model model);
+
+    public void deleteReserve(Model model);
 }

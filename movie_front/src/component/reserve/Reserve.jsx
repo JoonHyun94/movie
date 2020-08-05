@@ -430,7 +430,6 @@ class Reserve extends Component {
                 }
             })
             .catch(res => console.log(res))
-            console.log(this.apiResult);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -669,6 +668,7 @@ class Reserve extends Component {
         form.append('id', window.sessionStorage.getItem("id"));
         form.append('area', this.state.selectArea)
         form.append('theater', this.state.selectTheater)
+        form.append('floor', floor)
         form.append('week', this.state.selectWeek)
         form.append('day', this.state.selectDate.substring(4, this.state.selectDate.length))
         form.append('grade', this.state.selectGrade)

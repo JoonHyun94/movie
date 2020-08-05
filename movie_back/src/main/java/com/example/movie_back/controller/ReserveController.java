@@ -98,6 +98,7 @@ public class ReserveController {
         model.addAttribute("id", req.getParameter("id"));
         model.addAttribute("area", req.getParameter("area"));
         model.addAttribute("theater", req.getParameter("theater"));
+        model.addAttribute("floor", req.getParameter("floor"));
         model.addAttribute("week", req.getParameter("week"));
         model.addAttribute("day", req.getParameter("day"));
         model.addAttribute("grade", req.getParameter("grade"));
@@ -144,6 +145,7 @@ public class ReserveController {
         model.addAttribute("id", req.getParameter("id"));
         model.addAttribute("area", req.getParameter("area"));
         model.addAttribute("theater", req.getParameter("theater"));
+        model.addAttribute("floor", req.getParameter("floor"));
         model.addAttribute("week", req.getParameter("week"));
         model.addAttribute("day", req.getParameter("day"));
         model.addAttribute("title", req.getParameter("title"));
@@ -172,11 +174,41 @@ public class ReserveController {
         model.addAttribute("id", req.getParameter("id"));
         model.addAttribute("area", req.getParameter("area"));
         model.addAttribute("theater", req.getParameter("theater"));
+        model.addAttribute("floor", req.getParameter("floor"));
+        model.addAttribute("week", req.getParameter("week"));
+        model.addAttribute("day", req.getParameter("day"));
+        model.addAttribute("title", req.getParameter("title"));
+        model.addAttribute("time", req.getParameter("time"));
+        
+        reserveService.setReserve(model, reserveVO);
+    }
+
+    @PostMapping("/deleteTprr")
+    public void deleteTprr(HttpServletRequest req, Model model) {
+        model.addAttribute("id", req.getParameter("id"));
+        model.addAttribute("area", req.getParameter("area"));
+        model.addAttribute("theater", req.getParameter("theater"));
+        model.addAttribute("floor", req.getParameter("floor"));
         model.addAttribute("week", req.getParameter("week"));
         model.addAttribute("day", req.getParameter("day"));
         model.addAttribute("title", req.getParameter("title"));
         model.addAttribute("time", req.getParameter("time"));
 
-        reserveService.setReserve(model, reserveVO);
+        reserveService.deleteTprr(model);
+    }
+
+    @PostMapping("/removeReserve")
+    public void removeReserve(HttpServletRequest req, Model model) {
+        model.addAttribute("id", req.getParameter("id"));
+        model.addAttribute("area", req.getParameter("area"));
+        model.addAttribute("theater", req.getParameter("theater"));
+        model.addAttribute("day", req.getParameter("day"));
+        model.addAttribute("ticket_number", req.getParameter("ticket_number"));
+        model.addAttribute("ticket_price", req.getParameter("ticket_price"));
+        model.addAttribute("title", req.getParameter("title"));
+        model.addAttribute("reserve_time", req.getParameter("reserve_time"));
+        model.addAttribute("time", req.getParameter("start_time"));
+
+        reserveService.removeReserve(model);
     }
 } 

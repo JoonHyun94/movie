@@ -326,11 +326,25 @@ public class ReserveServiceImpl implements ReserveService{
 
     @Override
     public void setReserve(Model model, ReserveVO reserveVO) {
-        HashMap<String,String> result = new HashMap<String,String>();
-
         reserveVO = reserveDao.getTprrInfo(model);
-        System.out.println(result);
 
-        // reserveDao.insertReserve(result);
+        reserveDao.insertReserve(reserveVO);
+    }
+
+    @Override
+    public void deleteTprr(Model model) {
+        reserveDao.deleteTprr(model);
+    }
+
+    @Override
+    public void removeReserve(Model model) {
+        boolean delete = false;
+        if(delete == false) {
+            reserveDao.deleteTprr(model);
+            delete = true;
+        }
+        if(delete == true) {
+            // reserveDao.deleteReserve(model);
+        }
     }
 }

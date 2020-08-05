@@ -31,4 +31,8 @@ public interface ReserveService {
     public MemberVO getMemberList(String id);
 
     public void setReserve(Model model, ReserveVO reserveVO);
+
+    public void deleteTprr(Model model);
+
+    public void removeReserve(Model model);
 }

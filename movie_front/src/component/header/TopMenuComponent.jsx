@@ -6,6 +6,7 @@ import ListComponent from '../main/List';
 import ReservePopComponent from '../reserve/ReservePop';
 import ReserveComponent from '../reserve/Reserve';
 import Payment from '../reserve/Payment';
+import Mypage from '../mypage/Mypage';
 import cgv_logo from '../../image/cgv_logo.png';
 import cgv_header from '../../image/header.png';
 import styled from 'styled-components';
@@ -14,7 +15,7 @@ const Header = styled.div`
     position: relative;
     width: 100%;
     height: 6vw;
-    background-color: ivory !important;
+    background-color: #F9F5EA !important;
 `
 const Bg_header = styled.img`
     position: absolute;
@@ -63,6 +64,13 @@ const Menu = styled.div`
     line-height: 6vw;
     white-space: nowrap;
 `
+const My_frame = styled.div`
+    position: absolute;
+    top: 50%;
+    right: -5vw;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+`
 
 class TopMenuComponent extends Component { 
 
@@ -75,31 +83,29 @@ class TopMenuComponent extends Component {
     render() { 
         return ( 
             <Router>
-                { window.location.href === window.location.protocol + "//" + window.location.host + "/kakaopay" ?
-                ""
-                :    
                 <Header id = "nav_var" className="nav_var">
                     <Bg_header position = "top"></Bg_header>
                     <Logo src = { cgv_logo } href="/"></Logo>
-                    <Hr></Hr><br></br>
-                    <Hr></Hr><br></br>
-                    <Hr></Hr><br></br>
                     <Menu_frame>
                         <a href="/main"><Menu>Main</Menu></a>
                         <a href="/list"><Menu>무비차트</Menu></a>
-                        { sessionStorage.length > 1 ?
+                    </Menu_frame>                        
+                    { sessionStorage.length > 1 ?
+                        <My_frame>
+                            <a href="/mypage"><Menu>Mypage</Menu></a>
                             <Menu login = "true" onClick = { () => this.logout()}>logout</Menu>
-                            : ""
-                        }
-                    </Menu_frame>
+                        </My_frame>
+                        : ""
+                    }
                     <Bg_header position = "bottom"></Bg_header>
                 </Header>
-                }
+
                 <Route path="/main" component = { MainComponent }/>
                 <Route path="/list" component = { ListComponent }/>
                 <Route path="/reserve" component = { ReserveComponent }/>
                 <Route path="/reserve_pop" component = { ReservePopComponent }/>
                 <Route path="/payment" component = { Payment }/>
+                <Route path="/mypage" component = { Mypage }/>
             </Router>
         ) 
     } 

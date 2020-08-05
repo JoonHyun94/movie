@@ -1,10 +1,12 @@
 package com.example.movie_back.service.member.face;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.mail.MessagingException;
 
 import com.example.movie_back.dto.MemberVO;
+import com.example.movie_back.dto.ReserveVO;
 
 public interface MemberService {
 
@@ -21,5 +23,7 @@ public interface MemberService {
     public MemberVO getFindUser(MemberVO mem);
 
     public void sendMail(String id, String pw, String email) throws MessagingException, IOException;
+
+    public ArrayList<ReserveVO> getReserveList(String id, ReserveVO reserve);
 
 }

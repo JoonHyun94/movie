@@ -1,12 +1,14 @@
 package com.example.movie_back.service.member.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import com.example.movie_back.dao.member.MemberDao;
 import com.example.movie_back.dto.MemberVO;
+import com.example.movie_back.dto.ReserveVO;
 import com.example.movie_back.service.member.face.MemberService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,5 +109,14 @@ public class MemberServiceImpl implements MemberService {
         //메일 보내기
         javaMailSender.send(message);
 
+    }
+ 
+    @Override
+    public ArrayList<ReserveVO> getReserveList(String id, ReserveVO reserve) {
+        ArrayList<ReserveVO> result = new ArrayList<ReserveVO>();
+
+        result = memberDao.selectReserveList(id);
+                
+        return result;
     }
 }

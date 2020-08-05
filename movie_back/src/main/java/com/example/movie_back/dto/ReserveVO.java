@@ -5,6 +5,7 @@ public class ReserveVO {
     private String id; // FK
     private String area;
     private String theater;
+    private String floor;
     private String week;
     private String day;
     private String grade;
@@ -12,8 +13,9 @@ public class ReserveVO {
     private String start_time;
     private String end_time;
     private String reserve_time;
-    private String seat;
+    private String select_seat;
     private int ticket_number;
+    private int ticket_price;
 
     public int getReserve_seq() {
         return reserve_seq;
@@ -40,7 +42,14 @@ public class ReserveVO {
         return theater;
     }
     public void setTheater(String theater) {
-        this.week = theater;
+        this.theater = theater;
+    }
+
+    public String getFloor() {
+        return floor;
+    }
+    public void setFloor(String floor) {
+        this.floor = floor;
     }
 
     public String getWeek() {
@@ -92,11 +101,11 @@ public class ReserveVO {
         this.reserve_time = reserve_time;
     }
 
-    public String getSeat() {
-        return seat;
+    public String getSelect_seat() {
+        return select_seat;
     }
-    public void setSeat(String seat) {
-        this.seat = seat;
+    public void setSelect_seat(String select_seat) {
+        this.select_seat = select_seat;
     }
 
     public int getTicket_number() {
@@ -104,5 +113,12 @@ public class ReserveVO {
     }
     public void setTicket_number(int ticket_number) {
         this.ticket_number = ticket_number;
+    }
+
+    public int getTicket_price() {
+        return ticket_price;
+    }
+    public void setTicket_price(int ticket_price) {
+        this.ticket_price = ticket_price;
     }
 }

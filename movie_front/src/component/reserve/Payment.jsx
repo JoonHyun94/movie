@@ -36,6 +36,7 @@ var state = {
     buyerTell: 0,
     buyerEmail: null,
     idCheck: false,
+    floor: null,
     area: null,
     theater: null,
     time: null,
@@ -63,12 +64,31 @@ const paymentMovie = () => {
     .catch(res => console.log(res))
 }
 
-const Payment = ({ payOpen, payClose, area, theater, time, week, day, title, price }) => {
+const deleteTprr = () => {
+    let form = new FormData()
+
+    form.append('id', state.id)
+    form.append('area', state.area)
+    form.append('theater', state.theater)
+    form.append('time', state.time)
+    form.append('week', state.week)
+    form.append('day', state.day)
+    form.append('title', state.title)
+
+    axios.post('http://localhost:8088/deleteTprr', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
+    .then(res => {
+        console.log(res.data);
+    })
+    .catch(res => console.log(res))
+}
+
+const Payment = ({ payOpen, floor, area, theater, time, week, day, title, price }) => {
     if(payOpen === true) {
         state.price = price;
         
         if(state.idCheck === false) {
             state.id = window.sessionStorage.getItem("id");
+            state.floor = floor;
             state.area = area;
             state.theater = theater;
             state.time = time;
@@ -106,7 +126,7 @@ const Payment = ({ payOpen, payClose, area, theater, time, week, day, title, pri
                 pay_method: 'card',                           // 결제수단
                 merchant_uid: `mid_${new Date().getTime()}`,   // 주문번호
                 amount: state.price,                           // 결제금액
-                name: title + "결제",                           // 주문명
+                name: title + " " + "영화 결제",                           // 주문명
                 buyer_name: state.buyer,                           // 구매자 이름
                 buyer_tel: state.buyerTell,                     // 구매자 전화번호
                 buyer_email: state.buyerEmail               // 구매자 이메일
@@ -125,12 +145,21 @@ const Payment = ({ payOpen, payClose, area, theater, time, week, day, title, pri
         } = response;
 
         if (success) {
-            state.idCheck = false;
             paymentMovie();
             alert('결제 성공');
-        } else {
             state.idCheck = false;
-            alert(`결제 실패: ${ error_msg }`);
+            window.location.href="/mypage";
+            
+        } else {
+            state.idCheck = true;
+            var msg = "결제를 취소할 경우 진행중인 예약내용이 사라집니다. 진행하시겠습니까?";
+            if(window.confirm(msg) != 0) {
+                deleteTprr();
+                alert(`결제 실패: ${ error_msg }`);
+                window.location.href="/reserve";
+            } else {
+                state.idCheck = false;
+            }
         }
     }
 
