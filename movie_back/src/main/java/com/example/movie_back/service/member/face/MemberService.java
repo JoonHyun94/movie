@@ -26,4 +26,6 @@ public interface MemberService {
 
     public ArrayList<ReserveVO> getReserveList(String id, ReserveVO reserve);
 
+    public MemberVO getUserInfo(MemberVO mem);
+
 }

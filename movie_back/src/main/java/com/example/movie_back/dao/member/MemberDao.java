@@ -23,4 +23,7 @@ public interface MemberDao {
     public void insertMember(MemberVO mem);
 
     public ArrayList<ReserveVO> selectReserveList(String id);
+
+    public MemberVO selectUserInfo(MemberVO selectUserInfo);
+
 }

@@ -38,4 +38,9 @@
 		WHERE id = #{id }
 	</select>
 
+	<select id = "selectUserInfo" parameterType="com.example.movie_back.dto.MemberVO" resultType="com.example.movie_back.dto.MemberVO">
+		SELECT * FROM member
+		WHERE id = #{id }
+	</select>
+
 </mapper>

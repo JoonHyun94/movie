@@ -119,4 +119,9 @@ public class MemberServiceImpl implements MemberService {
                 
         return result;
     }
+
+    @Override
+    public MemberVO getUserInfo(MemberVO mem) {
+        return mem = memberDao.selectUserInfo(mem);
+    }
 }
