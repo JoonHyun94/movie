@@ -20,7 +20,7 @@ const Header = styled.div`
 const Bg_header = styled.img`
     position: absolute;
     left: 0;
-    bottom:  ${ 
+    bottom: ${ 
         props => {
             switch(props.position) {
                 case 'bottom' :
@@ -56,10 +56,20 @@ const Menu_frame = styled.div`
     margin: 0 auto;
 `
 const Menu = styled.div`
+    cursor: pointer;
     display: inline-block;
     color: #666;
     margin-right: 1vw;
-    font-size: 1.5vw;
+    font-size: ${ 
+        props => {
+            switch(props.user) {
+                case 'true' :
+                    return '1vw';
+                default:
+                    return '1.5vw'
+            }
+        }
+    };
     font-weight: bold;
     line-height: 6vw;
     white-space: nowrap;
@@ -67,7 +77,7 @@ const Menu = styled.div`
 const My_frame = styled.div`
     position: absolute;
     top: 50%;
-    right: -5vw;
+    right: -2vw;
     transform: translate(-50%, -50%);
     margin: 0 auto;
 `
@@ -76,8 +86,7 @@ class TopMenuComponent extends Component {
 
     logout() {
         window.sessionStorage.clear();
-        window.location.reload();
-        this.reload();
+        window.location.href = "/main";
     }
 
     render() { 
@@ -92,8 +101,8 @@ class TopMenuComponent extends Component {
                     </Menu_frame>                        
                     { sessionStorage.length > 1 ?
                         <My_frame>
-                            <a href="/mypage"><Menu>Mypage</Menu></a>
-                            <Menu login = "true" onClick = { () => this.logout()}>logout</Menu>
+                            <a href="/mypage"><Menu user = "true">Mypage</Menu></a>
+                            <Menu user = "true" login = "true" onClick = { () => this.logout()}>logout</Menu>
                         </My_frame>
                         : ""
                     }

@@ -344,7 +344,7 @@ public class ReserveServiceImpl implements ReserveService{
             delete = true;
         }
         if(delete == true) {
-            // reserveDao.deleteReserve(model);
+            reserveDao.deleteReserve(model);
         }
     }
 }

@@ -207,7 +207,7 @@ public class ReserveController {
         model.addAttribute("ticket_price", req.getParameter("ticket_price"));
         model.addAttribute("title", req.getParameter("title"));
         model.addAttribute("reserve_time", req.getParameter("reserve_time"));
-        model.addAttribute("time", req.getParameter("start_time"));
+        model.addAttribute("time", req.getParameter("time"));
 
         reserveService.removeReserve(model);
     }

@@ -124,4 +124,23 @@ public class MemberServiceImpl implements MemberService {
     public MemberVO getUserInfo(MemberVO mem) {
         return mem = memberDao.selectUserInfo(mem);
     }
+
+    @Override
+    public boolean checkMember(MemberVO mem) {
+        boolean result = true;
+        
+        String id = memberDao.selectId(mem);
+        String pw = memberDao.selectPw(mem);
+
+        if(id.equalsIgnoreCase("null") || pw.equalsIgnoreCase("null")) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    @Override
+    public void removeMember(MemberVO mem) {
+        memberDao.deleteMember(mem);
+    }
 }

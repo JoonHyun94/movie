@@ -10,6 +10,7 @@ import com.example.movie_back.service.member.face.MemberService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,4 +44,30 @@ public class MypageController {
         return member;
     }
     
+    @PostMapping("/memberCheck")
+    public boolean memberCheck(HttpServletRequest req, MemberVO member) {
+        boolean result = false;
+
+        member.setId(req.getParameter("id"));
+        member.setPw(req.getParameter("pw"));
+
+        result = MemberService.checkMember(member);
+
+        System.out.println(result);
+
+        return result;
+    }
+
+    @PostMapping("/removeMember")
+    public void removeMember(HttpServletRequest req, MemberVO member) {
+        member.setId(req.getParameter("id"));
+        member.setPw(req.getParameter("pw"));
+
+        MemberService.removeMember(member);
+    }
+
+    @PostMapping("/imgUpload")
+    public void imgUpload() {
+        
+    }
 } 

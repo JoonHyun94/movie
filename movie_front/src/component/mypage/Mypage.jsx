@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
 import styled, { keyframes } from 'styled-components';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { withStyles } from '@material-ui/core/styles';
@@ -12,6 +11,7 @@ import expansion from "../../image/expansion.png";
 import user from "../../image/user.png";
 import finger from "../../image/finger.png";
 import BarcodePop from "../mypage/BarcodePop";
+import MemCheck from "../mypage/MemCheck";
 
 const type = keyframes`
     from { margin-left: -150%; }
@@ -111,6 +111,7 @@ const InfoBody = styled.div`
     text-align: justify;
 `
 const UserImgDiv = styled.div`
+    cursor: pointer;
     width: 7vw;
     height: 7vw;
     margin-left: 5vw;
@@ -286,10 +287,13 @@ const Expansion = styled.img`
     height: 5%;
 `
 const ButtonBody = styled.div`
+    display: flex;
+    flex-direction: column;
     position: relative;
     width: 100%;
 `
 const Button = styled.button`
+    position: relative;
     margin-bottom: 1vw;
     cursor: pointer;
     width: ${ 
@@ -306,21 +310,22 @@ const Button = styled.button`
         props => {
             switch(props.user) {
                 case "true" :
-                    return '40%';
-            }
-        }
-    };
-    transform: ${ 
-        props => {
-            switch(props.user) {
-                case "true" :
-                    return 'translate(0, 0)';
+                    return '30%';
             }
         }
     };
     height: 2vw;
     border: none;
-    border-radius: 0 0 5px 5px;
+    border-radius: ${ 
+        props => {
+            switch(props.user) {
+                case "true" :
+                    return '5px';
+                default :
+                    return '0 0 5px 5px';
+            }
+        }
+    };
     background-color: #F5DA81;
     white-space: pre;
     font-family: NanumGothic;
@@ -443,6 +448,9 @@ const ClickText = styled.div`
     width: 100%;
     font-size: 0.8vw;
 `
+const ImgInput = styled.input`
+    display: none;
+`
 
 const styles = theme => ({
     progress: {
@@ -459,6 +467,7 @@ class Mypage extends Component {
         headerHeight: 0,
         prevHeaderHeight: 0,
         myPageHeight: 0,
+        clickTextHeight: 0,
         mainTag: null,
         reserveResult: [],
         userId: null,
@@ -471,7 +480,10 @@ class Mypage extends Component {
         userSecurity: null,
         date: new window.Date(),
         bacodeOpen: false,
-        clickText: null
+        MemCheckOpen: false,
+        reserveCheck: false,
+        clickText: null,
+        reserveIndex: 0
     }
 
     componentDidMount() {
@@ -479,7 +491,6 @@ class Mypage extends Component {
         this.IntervalText = setInterval(this.loadingText, 20);
 
         this.getMyInfo();
-        // this.getMypage();
     };
 
     
@@ -555,6 +566,8 @@ class Mypage extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        this.state.clickTextHeight = 100 - ((this.state.myPageHeight) / (window.innerHeight) * 100);
+
         if(this.state.prevHeaderHeight != this.state.headerHeight) {
             this.setState({ 
                 prevHeaderHeight: this.state.headerHeight
@@ -565,16 +578,12 @@ class Mypage extends Component {
             this.state.mainTag = document.querySelector("[id = 'Mypage_Back']");
             this.state.mainTag.style.height = this.state.newHeight + "vh";
         }
-
-        if(100 - ((this.state.myPageHeight) / (window.innerHeight) * 100) > 39) {
-            // document.querySelector("[id = 'clicktext']").innerHTML = "클릭시 오른쪽에 보여집니다.";
-        }
         
-        if(100 - ((this.state.myPageHeight) / (window.innerHeight) * 100) < 39) {
+        if(this.state.clickTextHeight < 39) {
             document.querySelector("[id = 'clicktext']").innerHTML = "클릭시 아래에 보여집니다.";
+        } else if(40 === this.state.clickTextHeight) {
+            document.querySelector("[id = 'clicktext']").innerHTML = "클릭시 오른쪽에 보여집니다.";
         }
-
-
 
         return true;
     };
@@ -582,10 +591,12 @@ class Mypage extends Component {
     onHeight = () => {
         const hdHeight = document.querySelector(".nav_var").offsetHeight;
         const mypageHeight = document.querySelector("[id = 'mypagebody']").offsetHeight;
+        const clickText = document.querySelector("[id = 'clicktext']");
 
         this.setState({ 
             headerHeight: hdHeight,
-            myPageHeight: mypageHeight
+            myPageHeight: mypageHeight,
+            clickTextTag: clickText
         });
     };
 
@@ -599,32 +610,42 @@ class Mypage extends Component {
             bacodeOpen: false 
         });
     }
+    closeMemcCheck = () => {
+        this.setState({ 
+            memberCheck: false,
+            reserveCheck: false
+        });
+    }
+
+    imgUpload = () => {
+        let form = new FormData()
+        form.append('img', document.querySelector("[id = 'myimg']").click());
+        
+        axios.post('http://localhost:8088/imgUpload', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
+        .then(res => {
+            console.log(res.data);
+        }) 
+        .catch(res => console.log(res))
+    }
 
     removeReserve = (index) => {
         var msg = "예매를 취소할 경우 예매내역이 전부 사라집니다. 진행하시겠습니까?";
         if(window.confirm(msg) != 0) {
-            let form = new FormData()
-            
-            for(var i = 0; i < this.state.reserveResult.length; i++) {
-                if(index === i) {
-                    form.append('id', this.state.reserveResult[i].id);
-                    form.append('area', this.state.reserveResult[i].area);
-                    form.append('theater', this.state.reserveResult[i].theater);
-                    form.append('day', this.state.reserveResult[i].day);
-                    form.append('reserve_time', this.state.reserveResult[i].reserve_time);
-                    form.append('ticket_number', this.state.reserveResult[i].ticket_number);
-                    form.append('ticket_price', this.state.reserveResult[i].ticket_price);
-                    form.append('title', this.state.reserveResult[i].title);
-                    form.append('time', this.state.reserveResult[i].start_time);
-                }
-            }
+            this.setState({
+                memberCheck: false,
+                reserveCheck: true,
+                reserveIndex: index
+            });
+        }
+    }
 
-            axios.post('http://localhost:8088/removeReserve', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
-            .then(res => {
-                alert("해당 예매내역이 취소 되었습니다.")
-                window.location.href="/mypage";
-            })
-            .catch(res => console.log(res))
+    removeMember = () => {
+        var msg = "회원탈퇴를 하실 경우 예매된 내역과 회원정보가 전부 사라집니다. 진행하시겠습니까?";
+        if(window.confirm(msg) != 0) {
+            this.setState({
+                memberCheck: true,
+                reserveCheck: false,
+            });
         }
     }
 
@@ -659,8 +680,9 @@ class Mypage extends Component {
                                 <Circle circle = "3"/>
                                 <Circle circle = "4"/>
                                 <MyInfo>
-                                    <UserImgDiv>
-                                        <UserImg src = { user }></UserImg>
+                                    <UserImgDiv onClick = { () => this.imgUpload() }>
+                                        <UserImg type="file" src = { user }></UserImg>
+                                        <ImgInput type = "file" id = "myimg" name = "myimg"/>
                                     </UserImgDiv>
                                     <InfoBody>
                                         <UserName>{ this.state.userName }님</UserName>
@@ -675,6 +697,9 @@ class Mypage extends Component {
                                     <ButtonBody>
                                         <Button user = "true" onClick = { () => this.getMypage() }>
                                             예매내역 확인
+                                        </Button>
+                                        <Button user = "true" onClick = { () => this.removeMember() }>
+                                            회원탈퇴
                                         </Button>
                                         <FingerBody>
                                             <ClickFinger src = { finger }/>
@@ -722,6 +747,7 @@ class Mypage extends Component {
                                 </ReserveBody>
                             </MyBody>
                         </MypageBody>
+                        <MemCheck member = { this.state.memberCheck } reserve = { this.state.reserveCheck } MemCheckClose = { this.closeMemcCheck } reserveResult = { this.state.reserveResult } reserveIndex = { this.state.reserveIndex } />
                         <BarcodePop bacodeOpen = { this.state.bacodeOpen } bacodeClose = { this.closeExpansion } />
                     </MypageBack>
                 }

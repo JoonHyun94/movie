@@ -28,4 +28,8 @@ public interface MemberService {
 
     public MemberVO getUserInfo(MemberVO mem);
 
+    public boolean checkMember(MemberVO mem);
+
+    public void removeMember(MemberVO mem);
+
 }

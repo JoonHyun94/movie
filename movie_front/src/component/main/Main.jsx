@@ -701,6 +701,10 @@ class Main extends Component {
         });
     }
 
+    mypage = () => {
+        window.location.href = "/mypage";
+    }
+
     render() {
         var { login, sign, test, findUser } = this.state;
 
@@ -827,7 +831,7 @@ class Main extends Component {
                                     </Title>
                                     <Span user = "true">{ sessionStorage.name }님 환영합니다.</Span>
                                     <Buttondiv>
-                                        <Button>MY페이지</Button>
+                                        <Button onClick = { () => this.mypage() }>MY페이지</Button>
                                         <Button onClick = { () => this.logout() }>로그아웃</Button>
                                     </Buttondiv>
                                 </Loginform>

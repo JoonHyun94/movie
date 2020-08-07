@@ -26,4 +26,6 @@ public interface MemberDao {
 
     public MemberVO selectUserInfo(MemberVO selectUserInfo);
 
+    public void deleteMember(MemberVO deleteUser);
+
 }

@@ -5,42 +5,47 @@
 	
 	<select id = "selectId" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
 		SELECT NVL(MAX(id), 'null') FROM member
-		WHERE id = #{id }
+			WHERE id = #{id }
 	</select>
 
 	<select id = "selectPw" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
 		SELECT NVL(MAX(pw), 'null') FROM member
-		WHERE UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
+			WHERE UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
 	</select>
 
 	<select id = "selectUser" parameterType="com.example.movie_back.dto.MemberVO" resultType="com.example.movie_back.dto.MemberVO">
 		SELECT * FROM member
-		WHERE id = #{id } AND UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
+			WHERE id = #{id } AND UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
 	</select>
 
 	<select id = "selectSecurityNumber" parameterType="com.example.movie_back.dto.MemberVO" resultType="String">
 		SELECT NVL(MAX(security_number), 'null') FROM member
-		WHERE security_number = #{security_number }
+			WHERE security_number = #{security_number }
 	</select>
 
 	<insert id = "insertMember" parameterType = "com.example.movie_back.dto.MemberVO">
         INSERT INTO member
-		VALUES (#{id }, #{pw }, #{name }, #{security_number }, #{phone_number }, #{email }, #{gender }, SYSDATE)
+			VALUES (#{id }, #{pw }, #{name }, #{security_number }, #{phone_number }, #{email }, #{gender }, SYSDATE)
 	</insert>
 
 	<select id = "selectFindUser" parameterType="com.example.movie_back.dto.MemberVO" resultType="com.example.movie_back.dto.MemberVO">
 		SELECT id, pw FROM member
-		WHERE name = #{name } AND security_number = #{security_number }
+			WHERE name = #{name } AND security_number = #{security_number }
 	</select>
 
    	<select id = "selectReserveList" parameterType="String" resultType="com.example.movie_back.dto.ReserveVO">
 		SELECT * FROM reserve
-		WHERE id = #{id }
+			WHERE id = #{id }
 	</select>
 
 	<select id = "selectUserInfo" parameterType="com.example.movie_back.dto.MemberVO" resultType="com.example.movie_back.dto.MemberVO">
 		SELECT * FROM member
-		WHERE id = #{id }
+			WHERE id = #{id }
 	</select>
+
+	<delete id = "deleteMember">
+		DELETE FROM member
+			WHERE id = #{id } AND UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
+	</delete>
 
 </mapper>
