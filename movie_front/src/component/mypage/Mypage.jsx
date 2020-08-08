@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import styled, { keyframes } from 'styled-components';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { withStyles } from '@material-ui/core/styles';
@@ -10,6 +10,7 @@ import barcodeimg from "../../image/barcode.png";
 import expansion from "../../image/expansion.png";
 import user from "../../image/user.png";
 import finger from "../../image/finger.png";
+import modifyFinger from "../../image/modifyFinger.png";
 import BarcodePop from "../mypage/BarcodePop";
 import MemCheck from "../mypage/MemCheck";
 
@@ -66,8 +67,26 @@ const MypageBody = styled.div`
     background-image: url(${ vintageconcrete });
     border-radius: 5px;
     @media only screen and (orientation: portrait) {
-        width: 60%;
-        height: 80vh;
+        width: ${ 
+            props => {
+                switch(props.modify) {
+                    case "true" :
+                        return '70%';
+                    default :
+                        return '60%';
+                }
+            }
+        };
+        height: ${ 
+            props => {
+                switch(props.modify) {
+                    case "true" :
+                        return '40vh';
+                    default :
+                        return '80vh';
+                }
+            }
+        };
     }
 `
 const MyBody = styled.div`
@@ -89,7 +108,16 @@ const MyBody = styled.div`
 const MyInfo = styled.div`
     display: flex;
     flex-wrap: wrap;
-    width: 50%;
+    width: ${ 
+        props => {
+            switch(props.modify) {
+                case "true" :
+                    return '100%';
+                default :
+                    return '50%';
+            }
+        }
+    };
     height: 100%;
     position: absolute;
     background-color: transparent !important;
@@ -111,9 +139,16 @@ const InfoBody = styled.div`
     text-align: justify;
 `
 const UserImgDiv = styled.div`
-    cursor: pointer;
+    cursor: ${ 
+        props => {
+            switch(props.modify) {
+                case "true" :
+                    return 'pointer';
+            }
+        }
+    };
     width: 7vw;
-    height: 7vw;
+    height: 8vw;
     margin-left: 5vw;
     margin-top: 5vw;
     border: 1px solid #666;
@@ -301,20 +336,41 @@ const Button = styled.button`
             switch(props.user) {
                 case "true" :
                     return '40%';
+                case "modify":
+                    return '15%';
                 default :
                     return '100%';
             }
         }
     };
-    left:${ 
+    left: ${ 
         props => {
             switch(props.user) {
                 case "true" :
                     return '30%';
+                case "modify":
+                    return '77%';
             }
         }
     };
-    height: 2vw;
+    bottom: ${ 
+        props => {
+            switch(props.user) {
+                case "modify":
+                    return '4vw';
+            }
+        }
+    };
+    height: ${ 
+        props => {
+            switch(props.user) {
+                case "modify":
+                    return '3vw';
+                default :
+                    return '2vw';
+            }
+        }
+    };
     border: none;
     border-radius: ${ 
         props => {
@@ -329,7 +385,16 @@ const Button = styled.button`
     background-color: #F5DA81;
     white-space: pre;
     font-family: NanumGothic;
-    font-size: 0.7vw;
+    font-size: ${ 
+        props => {
+            switch(props.user) {
+                case "modify":
+                    return '0.9vw';
+                default :
+                    return '0.7vw';
+            }
+        }
+    };
     transition: all 0.8s, color 0.8s; // 마우스오버 시 box-shadow 0.8s, 텍스트 색깔 0.8s 설정
     &:hover {
         color: #fff;
@@ -431,14 +496,55 @@ const Circle = styled.div`
         }
     };
 `
+const ImgFinger = styled.div`
+    display: flex;
+    position: relative;
+    width: 20%;
+    height: 100%;
+    justify-content: flex-end;
+`
 const FingerBody = styled.div`
     display: flex;
     flex-direction: column;
     position: absolute;
-    right: 0;
-    width: 30%;
+    right: ${ 
+        props => {
+            switch(props.modify) {
+                case "true" :
+                    return '-0.5vw';
+                default :
+                    return '0';
+            }
+        }
+    };
+    width: ${ 
+        props => {
+            switch(props.modify) {
+                case "true" :
+                    return '60%';
+                default :
+                    return '30%';
+            }
+        }
+    };
     animation: ${ click } 0.4s infinite;
     animation-direction: alternate;
+    align-items: ${ 
+        props => {
+            switch(props.modify) {
+                case "true" :
+                    return 'center';
+            }
+        }
+    };
+    transform: ${ 
+        props => {
+            switch(props.modify) {
+                case "true" :
+                    return 'translate(0, 13vw)';
+            }
+        }
+    };
 `
 const ClickFinger = styled.img`
     width: 20%;
@@ -451,12 +557,75 @@ const ClickText = styled.div`
 const ImgInput = styled.input`
     display: none;
 `
+const Modify = styled.div`
+    width: 80%;
+    height: 60%;
+    margin-top: 5vw;
+`
+const TextBody = styled.div`
+    display: flex;
+    flex-direction: row;
+    margin-top: 0.5vw;
+    margin-left: 3vw;
+    width: 60%;
+    font-size: 1vw;
+`
+const TextInput = styled.input`
+    margin-top: 0.5vw;
+    width: 70%;
+    height: 2vw;
+    border: none;
+    border-bottom: 1px solid black;
+    border-width: 0.1vw;
+    outline: none;
+    background-color: transparent;
+    font-size: 1vw;
+    vertical-align: bottom;
+`
+const TextInfo = styled.div`
+    margin-top: 0.5vw;
+    width: ${ 
+        props => {
+            switch(props.info) {
+                case "true" :
+                    return '70%';
+                default :
+                    return '30%';
+            }
+        }
+    };
+    height: 2vw;
+    text-align: ${ 
+        props => {
+            switch(props.info) {
+                case "true" :
+                    return 'justify';
+                default :
+                    return 'end';
+            }
+        }
+    };
+    font-weight: ${ 
+        props => {
+            switch(props.info) {
+                case "true" :
+                    return 'none';
+                default :
+                    return 'bold';
+            }
+        }
+    };
+    line-height: 2vw;
+`
+const FormImg = styled.form`
+`
 
 const styles = theme => ({
     progress: {
       margin: theme.spacing.unit * 2
     }
 });
+
 
 class Mypage extends Component { 
     state = {
@@ -483,7 +652,12 @@ class Mypage extends Component {
         MemCheckOpen: false,
         reserveCheck: false,
         clickText: null,
-        reserveIndex: 0
+        reserveIndex: 0,
+        modify: false,
+        textPw: null,
+        userImg: null,
+        file : '',
+        previewURL : ''
     }
 
     componentDidMount() {
@@ -501,17 +675,33 @@ class Mypage extends Component {
         axios.post('http://localhost:8088/myinfo', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
         .then(res => { 
             console.log(res.data);
-            this.setState({
-                userId: res.data.id,
-                userPw: res.data.pw,
-                userName: res.data.name,
-                userPhone: res.data.phone_Number,
-                userEmail: res.data.email,
-                userGender: res.data.gender,
-                userSignDate: res.data.sign_date,
-                userSecurity: res.data.security_number,
-                nullCheck: 1
-            });
+            if(res.data.user_img === 'null') {
+                this.setState({
+                    userId: res.data.id,
+                    userPw: res.data.pw,
+                    userName: res.data.name,
+                    userPhone: res.data.phone_Number,
+                    userEmail: res.data.email,
+                    userGender: res.data.gender,
+                    userSignDate: res.data.sign_date,
+                    userSecurity: res.data.security_Number,
+                    nullCheck: 1,
+                    userImg: user
+                });
+            } else {
+                this.setState({
+                    userId: res.data.id,
+                    userPw: res.data.pw,
+                    userName: res.data.name,
+                    userPhone: res.data.phone_Number,
+                    userEmail: res.data.email,
+                    userGender: res.data.gender,
+                    userSignDate: res.data.sign_date,
+                    userSecurity: res.data.security_Number,
+                    nullCheck: 1,
+                    userImg: "../../" + res.data.user_img
+                });
+            }
         })
         .catch(res => console.log(res))
     }
@@ -617,15 +807,56 @@ class Mypage extends Component {
         });
     }
 
-    imgUpload = () => {
-        let form = new FormData()
-        form.append('img', document.querySelector("[id = 'myimg']").click());
+    textCheck = (e) => {
+        if(e.target.name === "pw") {
+            this.state.pw = e.target.value;
+        }
+    }
+
+    inputClick = () => {
+        document.getElementById("file").click();
+    }
+
+    modifyImg = (e) => {
+        e.preventDefault();
+
+        var reader = new FileReader();
+        var file = e.target.files[0];
+
+        reader.onload = () => {
+            this.setState({
+                file : file,
+                previewURL : reader.result
+            })
+        }
         
-        axios.post('http://localhost:8088/imgUpload', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
-        .then(res => {
-            console.log(res.data);
-        }) 
-        .catch(res => console.log(res))
+        if(file != "undefined") {
+            reader.readAsDataURL(file);
+            document.getElementById("file").src = this.state.previewURL;
+        }
+    }
+
+    modifyMember = () => {
+        if(this.state.modify === false) {
+            this.setState({
+                modify: true
+            });
+        } else {
+            let form = new FormData()
+            form.append('file', this.state.file);
+            form.append('id', this.state.userId);
+            
+            axios.post('http://localhost:8088/imgUpload', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
+            .then(res => {
+                console.log(res.data);
+
+            }) 
+            .catch(res => console.log(res))
+
+            this.setState({
+                modify: false
+            });
+        }
     }
 
     removeReserve = (index) => {
@@ -649,9 +880,9 @@ class Mypage extends Component {
         }
     }
 
-    render() { 
+    render() {
         const { classes } = this.props;
-        const { completed, nullCheck, loadingText, reserveResult, date } = this.state;
+        const { completed, nullCheck, loadingText, reserveResult, date, modify, userImg } = this.state;
 
         return (
             <React.Fragment>
@@ -672,17 +903,16 @@ class Mypage extends Component {
                     </React.Fragment>
                     :
                     <MypageBack id = "Mypage_Back">
+                        { modify === false ?
                         <MypageBody id = "mypagebody">
-                            {/* <Title>예매 현황</Title> */}
                             <MyBody>
                                 <Circle circle = "1"/>
                                 <Circle circle = "2"/>
                                 <Circle circle = "3"/>
                                 <Circle circle = "4"/>
                                 <MyInfo>
-                                    <UserImgDiv onClick = { () => this.imgUpload() }>
-                                        <UserImg type="file" src = { user }></UserImg>
-                                        <ImgInput type = "file" id = "myimg" name = "myimg"/>
+                                    <UserImgDiv>
+                                        <UserImg type="file" src = { this.state.previewURL === '' ? userImg : this.state.previewURL }></UserImg>
                                     </UserImgDiv>
                                     <InfoBody>
                                         <UserName>{ this.state.userName }님</UserName>
@@ -698,6 +928,9 @@ class Mypage extends Component {
                                         <Button user = "true" onClick = { () => this.getMypage() }>
                                             예매내역 확인
                                         </Button>
+                                        <Button user = "true" onClick = { () => this.modifyMember() }>
+                                            회원정보수정
+                                        </Button>
                                         <Button user = "true" onClick = { () => this.removeMember() }>
                                             회원탈퇴
                                         </Button>
@@ -706,7 +939,6 @@ class Mypage extends Component {
                                             <ClickText id = "clicktext">클릭시 오른쪽에 보여집니다.</ClickText>
                                         </FingerBody>
                                     </ButtonBody>
-
                                 </MyInfo>
                                 <ReserveBody>
                                     <ScrollBody>
@@ -747,6 +979,60 @@ class Mypage extends Component {
                                 </ReserveBody>
                             </MyBody>
                         </MypageBody>
+                        :
+                        <MypageBody modify = "true" id = "mypagebody">
+                            <MyBody>
+                                <Circle circle = "1"/>
+                                <Circle circle = "2"/>
+                                <Circle circle = "3"/>
+                                <Circle circle = "4"/>
+                                <MyInfo modify = "true">
+                                    <ImgFinger>
+                                        <UserImgDiv modify = "true" onClick = { () => this.inputClick() }>
+                                            <UserImg type = "file" src = { this.state.previewURL === '' ? user : this.state.previewURL }></UserImg>
+                                            <FormImg action="http://localhost:8088/imgUpload" method="post" enctype = "multipart/form-data">
+                                                <ImgInput type = "file" id = "file" name = "file" accept = 'image/jpg, impge/png, image/jpeg, image/gif'  onChange = { (e) => this.modifyImg(e) }/>
+                                                <ImgInput type = "submit" id = "submit" name = "submit" value = "업로드"/>
+                                            </FormImg>
+                                        </UserImgDiv>
+                                        <FingerBody modify = "true">
+                                            <ClickFinger src = { modifyFinger }/>
+                                            <ClickText id = "clicktext">클릭시 이미지 변경이 가능합니다.</ClickText>
+                                        </FingerBody>
+                                    </ImgFinger>
+                                    <Modify>
+                                        <TextBody>
+                                            <TextInfo>이름 : &emsp;</TextInfo>
+                                            <TextInfo info = "true">{ this.state.userName } &nbsp; { this.state.userGender }</TextInfo>
+                                        </TextBody>
+                                        <TextBody>
+                                            <TextInfo>주민등록번호 : &emsp;</TextInfo>
+                                            <TextInfo info = "true">{ this.state.userSecurity.substring(0, 6) + " - " + this.state.userSecurity.substring(6, 8) + "*****" }</TextInfo>
+                                        </TextBody>
+                                        <TextBody>
+                                        <TextInfo>아이디 : &emsp;</TextInfo>
+                                            <TextInfo info = "true">{ this.state.userId }</TextInfo> 
+                                    </TextBody>
+                                        <TextBody>
+                                            <TextInfo>비밀번호 : &emsp;</TextInfo>
+                                            <TextInput name = "pw" type = "text" onChange = { (e) => this.textCheck(e) }/>
+                                        </TextBody>
+                                        <TextBody>
+                                            <TextInfo>전화번호 : &emsp;</TextInfo>
+                                            <TextInput name = "phone" type = "text" onChange = { (e) => this.textCheck(e) }/>
+                                        </TextBody>
+                                        <TextBody>
+                                            <TextInfo>이메일 : &emsp;</TextInfo>
+                                            <TextInput name = "email" type = "email" onChange = { (e) => this.textCheck(e) }/>
+                                        </TextBody>
+                                    </Modify>
+                                    <Button user = "modify" onClick = { () => this.modifyMember() }>
+                                        회원정보수정
+                                    </Button>
+                                </MyInfo>
+                            </MyBody>
+                        </MypageBody>
+                        }
                         <MemCheck member = { this.state.memberCheck } reserve = { this.state.reserveCheck } MemCheckClose = { this.closeMemcCheck } reserveResult = { this.state.reserveResult } reserveIndex = { this.state.reserveIndex } />
                         <BarcodePop bacodeOpen = { this.state.bacodeOpen } bacodeClose = { this.closeExpansion } />
                     </MypageBack>

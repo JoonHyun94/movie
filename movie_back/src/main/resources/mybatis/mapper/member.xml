@@ -25,7 +25,7 @@
 
 	<insert id = "insertMember" parameterType = "com.example.movie_back.dto.MemberVO">
         INSERT INTO member
-			VALUES (#{id }, #{pw }, #{name }, #{security_number }, #{phone_number }, #{email }, #{gender }, SYSDATE)
+			VALUES (#{id }, #{pw }, #{name }, #{security_number }, #{phone_number }, #{email }, #{gender }, SYSDATE, 'null')
 	</insert>
 
 	<select id = "selectFindUser" parameterType="com.example.movie_back.dto.MemberVO" resultType="com.example.movie_back.dto.MemberVO">
@@ -48,4 +48,10 @@
 			WHERE id = #{id } AND UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
 	</delete>
 
+	<update id = "addMemberImg">
+		UPDATE member 
+			SET user_img = #{imgsrc }
+			WHERE id = #{id }
+	</update>
+	
 </mapper>

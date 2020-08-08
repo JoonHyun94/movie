@@ -143,4 +143,9 @@ public class MemberServiceImpl implements MemberService {
     public void removeMember(MemberVO mem) {
         memberDao.deleteMember(mem);
     }
+
+    @Override
+    public void addMemberImg(String id, String imgsrc) {
+        memberDao.addMemberImg(id, imgsrc);
+    }
 }

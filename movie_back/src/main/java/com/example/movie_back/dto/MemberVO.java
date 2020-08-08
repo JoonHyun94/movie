@@ -8,6 +8,7 @@ public class MemberVO {
     private String phone_number;
     private String email;
     private String gender;
+    private String user_img;
 
     public String getName() {
         return name;
@@ -56,5 +57,12 @@ public class MemberVO {
     }
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getUser_img() {
+        return user_img;
+    }
+    public void setUser_img(String user_img) {
+        this.user_img = user_img;
     }
 }

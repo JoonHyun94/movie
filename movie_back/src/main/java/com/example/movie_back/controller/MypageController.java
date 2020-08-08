@@ -1,5 +1,7 @@
 package com.example.movie_back.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,9 +12,10 @@ import com.example.movie_back.service.member.face.MemberService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 // CrossWeb 설정 -> 허용 주소
@@ -67,7 +70,35 @@ public class MypageController {
     }
 
     @PostMapping("/imgUpload")
-    public void imgUpload() {
-        
+    public void imgUpload(HttpServletRequest req, @RequestParam("file") MultipartFile mulFile) {
+        String id = req.getParameter("id");
+        File targetFile = new File("C:/ReactProject/movie/movie_front/src/image/userImg/" + id + "/");
+        String userSrc = "";
+
+        if(targetFile.exists()) {
+            File userFile = new File(targetFile + "/" + mulFile.getOriginalFilename());
+
+            try {
+                mulFile.transferTo(userFile);
+            } catch(IllegalStateException | IOException e) {
+                e.printStackTrace();
+            }
+
+            userSrc = userFile.toString();
+            MemberService.addMemberImg(id, userSrc);
+        } else {
+            targetFile.mkdir();
+
+            File userFile = new File(targetFile + "/" + mulFile.getOriginalFilename());
+    
+            try {
+                mulFile.transferTo(userFile);
+            } catch(IllegalStateException | IOException e) {
+                e.printStackTrace();
+            }
+
+            userSrc = userFile.toString();
+            MemberService.addMemberImg(id, userSrc);
+        }
     }
 } 
