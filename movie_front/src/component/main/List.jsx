@@ -5,6 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { withStyles } from '@material-ui/core/styles';
 import { Motion, spring } from 'react-motion';
 import ticket from '../../image/ticket.png';
+import MovieDetail from '../detail/MovieDetail';
 
 const Mainloading = styled.div`
     position: absolute;
@@ -81,6 +82,7 @@ const Rank = styled.div`
     font-weight: bold;
 `
 const Img_div = styled.div`
+    cursor: pointer;
     position: relative;
     width: 100%;
     margin: 0 auto;
@@ -265,7 +267,8 @@ class List extends Component {
                             grade: el.grade,
                             img: el.img,
                             percent: el.percent,
-                            opening: el.opening
+                            opening: el.opening,
+                            moviesrc: el.moviesrc
                         })
                         console.log(movieList);
                     })
@@ -286,6 +289,10 @@ class List extends Component {
         } else {
             window.location.href = '/reserve';
         }
+    }
+
+    getMovieDetail(moviesrc) {
+        window.location.href = "/detail" + moviesrc;
     }
 
     render() {      
@@ -319,7 +326,7 @@ class List extends Component {
                         return <Movie key = { index } listNum = { this.state.listNum }>
                             
                             <Rank>{ el.rank }</Rank>
-                            <Img_div>
+                            <Img_div onClick = { () => this.getMovieDetail(el.moviesrc) }>
                                 <Grade grade = { el.grade }>
                                     { el.grade === '청소' ? '청불' : el.grade }
                                 </Grade>

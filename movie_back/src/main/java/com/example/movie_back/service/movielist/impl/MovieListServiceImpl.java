@@ -43,11 +43,11 @@ public class MovieListServiceImpl implements MovieListService {
     public ArrayList<HashMap<String,String>> getMovieList(String url) {
 		HashMap<String,String> movieMap = new HashMap<String,String>();
 		ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
-		Document doc = null; //Document에는 페이지의 전체 소스가 저장된다
+		Document doc = null;
 
         try {
-            //get page (= 브라우저에서 url을 주소창에 넣은 후 request 한 것과 같다)
-            driver.get(url);
+			driver.get(url);
+
 			webElement = driver.findElement(By.className("btn-more-fontbold"));
 			webElement.click();
 			
@@ -66,6 +66,7 @@ public class MovieListServiceImpl implements MovieListService {
 		Elements elimg = doc.select("span.thumb-image > img");
 		Elements elpercent = doc.select("strong.percent span");
 		Elements elopening = doc.select("span.txt-info strong");
+		Elements elmoviesrc = doc.select(".box-image > a");
 		
 		// list-more
 		Elements elmoretitle = doc.select(".list-more .title");
@@ -73,6 +74,7 @@ public class MovieListServiceImpl implements MovieListService {
 		Elements elmoreimg = doc.select(".list-more .thumb-image > img");
 		Elements elmorepercent = doc.select(".list-more strong.percent span");
 		Elements elmoreopening = doc.select(".list-more span.txt-info strong");
+		Elements elmoremoviesrc = doc.select(".list-more .box-image > a");
 
 		String rank;
 		String title;
@@ -80,6 +82,7 @@ public class MovieListServiceImpl implements MovieListService {
 		String img;
 		String percent;
 		String opening;
+		String moviesrc;
 
 		System.out.println("============================================================");
 
@@ -92,13 +95,15 @@ public class MovieListServiceImpl implements MovieListService {
 			img = elimg.get(i).attr("src");
 			percent = elpercent.get(i).text();
 			opening = elopening.get(i).text();
-
+			moviesrc = elmoviesrc.get(i).attr("href");
+			
 			movieMap.put("rank", rank);
 			movieMap.put("title", title);
 			movieMap.put("grade", grade);
 			movieMap.put("img", img);
 			movieMap.put("percent", percent);
 			movieMap.put("opening", opening);
+			movieMap.put("moviesrc", moviesrc);
 
 			list.add(movieMap);
 		}
@@ -111,12 +116,14 @@ public class MovieListServiceImpl implements MovieListService {
 			img = elmoreimg.get(i).attr("src");
 			percent = elmorepercent.get(i).text();
 			opening = elmoreopening.get(i).text();
+			moviesrc = elmoremoviesrc.get(i).attr("href");
 
 			movieMap.put("title", title);
 			movieMap.put("grade", grade);
 			movieMap.put("img", img);
 			movieMap.put("percent", percent);
 			movieMap.put("opening", opening);
+			movieMap.put("moviesrc", moviesrc);
 
 			list.add(movieMap);
 		}
@@ -130,14 +137,14 @@ public class MovieListServiceImpl implements MovieListService {
 		HashMap<String,String> movieMap = new HashMap<String,String>();
 		ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
 		String url = "http://www.cgv.co.kr/movies/"; //크롤링할 url지정
-		Document doc = null;        //Document에는 페이지의 전체 소스가 저장된다
+		Document doc = null; 
 
 		try {
 			doc = Jsoup.connect(url).get();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//select를 이용하여 원하는 태그를 선택한다. select는 원하는 값을 가져오기 위한 중요한 기능이다.
+
 		Elements elimg = doc.select(".sect-movie-chart .thumb-image > img");    
 
 		for(int i = 0; i < elimg.size(); i++) {
@@ -150,5 +157,52 @@ public class MovieListServiceImpl implements MovieListService {
 		}
 
 		return list;
+	}
+
+	@Override
+	public HashMap<String,String> getMovieDetail(String moviesrc) {
+		HashMap<String,String> movieDetailMap = new HashMap<String,String>();
+		String url = "http://www.cgv.co.kr" + moviesrc; //크롤링할 url지정
+		Document doc = null; 
+
+		System.out.println(url);
+
+		try {
+			doc = Jsoup.connect(url).get();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		Elements elimg = doc.select(".thumb-image > img");
+		Elements eltitle = doc.select(".box-contents .title > strong");
+		Elements elstate = doc.select(".box-contents .round > *");
+		Elements elpercent = doc.select(".score .percent span");
+		Elements elinfo = doc.select(".spec");
+		Elements elcontent = doc.select(".sect-story-movie");
+
+		String img = elimg.attr("src");
+		String title = eltitle.text();
+		String state = elstate.text();
+		String percent = elpercent.text();
+		String info = elinfo.text();
+		String content = elcontent.text();
+
+		info = info.replaceAll("\\u00A0", ""); // &nbsp; 제거
+
+		System.out.println(img);
+		System.out.println(title);
+		System.out.println(state);
+		System.out.println(percent);
+		System.out.println(info);
+		System.out.println(content);
+
+		movieDetailMap.put("img", img);
+		movieDetailMap.put("title", title);
+		movieDetailMap.put("state", state);
+		movieDetailMap.put("percent", percent);
+		movieDetailMap.put("info", info);
+		movieDetailMap.put("content", content);
+
+		return movieDetailMap;
 	}
 }

@@ -32,6 +32,6 @@ public interface MemberService {
 
     public void removeMember(MemberVO mem);
 
-    public void addMemberImg(String id, String imgsrc);
+    public void addMemberImg(MemberVO mem, String imgsrc);
 
 }

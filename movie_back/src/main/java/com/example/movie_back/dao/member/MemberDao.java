@@ -28,6 +28,6 @@ public interface MemberDao {
 
     public void deleteMember(MemberVO deleteUser);
 
-    public void addMemberImg(String id, String imgsrc);
+    public void addMemberImg(MemberVO mem, String imgsrc);
 
 }

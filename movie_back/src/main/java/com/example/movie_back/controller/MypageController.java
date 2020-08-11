@@ -2,6 +2,7 @@ package com.example.movie_back.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import com.example.movie_back.dto.MemberVO;
 import com.example.movie_back.dto.ReserveVO;
 import com.example.movie_back.service.member.face.MemberService;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,22 +72,30 @@ public class MypageController {
     }
 
     @PostMapping("/imgUpload")
-    public void imgUpload(HttpServletRequest req, @RequestParam("file") MultipartFile mulFile) {
+    public void imgUpload(HttpServletRequest req, MemberVO member, @RequestParam("file") MultipartFile mulFile) {
         String id = req.getParameter("id");
-        File targetFile = new File("C:/ReactProject/movie/movie_front/src/image/userImg/" + id + "/");
+        member.setId(req.getParameter("id"));
+        member.setPw(req.getParameter("pw"));
+        member.setPhone_Number(req.getParameter("phone"));
+        member.setEmail(req.getParameter("email"));
+
+        File targetFile = new File("C:/ReactProject/movie/movie_front/public/userImg/" + id + "/");
         String userSrc = "";
 
         if(targetFile.exists()) {
             File userFile = new File(targetFile + "/" + mulFile.getOriginalFilename());
 
             try {
+                InputStream fileStream = mulFile.getInputStream();
+                FileUtils.copyInputStreamToFile(fileStream, userFile);
                 mulFile.transferTo(userFile);
+
             } catch(IllegalStateException | IOException e) {
                 e.printStackTrace();
             }
 
-            userSrc = userFile.toString();
-            MemberService.addMemberImg(id, userSrc);
+            userSrc = "/userImg/" + id + "/" +  mulFile.getOriginalFilename();
+            MemberService.addMemberImg(member, userSrc);
         } else {
             targetFile.mkdir();
 
@@ -97,8 +107,8 @@ public class MypageController {
                 e.printStackTrace();
             }
 
-            userSrc = userFile.toString();
-            MemberService.addMemberImg(id, userSrc);
+            userSrc = "/userImg/" + id + "/" +  mulFile.getOriginalFilename();
+            MemberService.addMemberImg(member, userSrc);
         }
     }
 } 

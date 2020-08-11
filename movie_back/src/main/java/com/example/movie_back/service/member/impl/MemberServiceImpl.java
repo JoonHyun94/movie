@@ -145,7 +145,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void addMemberImg(String id, String imgsrc) {
-        memberDao.addMemberImg(id, imgsrc);
+    public void addMemberImg(MemberVO mem, String imgsrc) {
+        memberDao.addMemberImg(mem, imgsrc);
     }
 }

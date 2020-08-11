@@ -1,8 +1,8 @@
 import React, {Component} from "react";
-import {Navbar} from "react-bootstrap";
 import {BrowserRouter as Router, Route} from "react-router-dom";
 import MainComponent from '../main/Main';
 import ListComponent from '../main/List';
+import DetailComponent from '../detail/MovieDetail';
 import ReservePopComponent from '../reserve/ReservePop';
 import ReserveComponent from '../reserve/Reserve';
 import Payment from '../reserve/Payment';
@@ -35,12 +35,13 @@ const Bg_header = styled.img`
     height: 10%;
 `
 const Hr = styled.hr`
+    width: 100%;
     position: absolute;
-    margin: 0;
-    margin-top: 1.2vw;
-    width: 99.8%;
-    border: 0.1px solid black;
-    filter: opacity(0.3);
+`
+const Culture = styled.div`
+    font-size: 2vw;
+    font-weight: bold;
+    text-shadow: 0px 1px #ffffff, 4px 4px 0px #DAD7D7;
 `
 const Logo = styled.img`
     position: absolute;
@@ -49,29 +50,38 @@ const Logo = styled.img`
     width: 7%;
 `
 const Menu_frame = styled.div`
+    display: flex;
+    flex-direction: column;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     margin: 0 auto;
 `
+const MenuBody = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 0.5vw;
+`
 const Menu = styled.div`
     cursor: pointer;
     display: inline-block;
     color: #666;
-    margin-right: 1vw;
+    margin: 1vw;
+    margin-top: 0;
+    margin-bottom: 0;
     font-size: ${ 
         props => {
             switch(props.user) {
                 case 'true' :
                     return '1vw';
                 default:
-                    return '1.5vw'
+                    return '1.2vw'
             }
         }
     };
     font-weight: bold;
-    line-height: 6vw;
     white-space: nowrap;
 `
 const My_frame = styled.div`
@@ -96,8 +106,11 @@ class TopMenuComponent extends Component {
                     <Bg_header position = "top"></Bg_header>
                     <Logo src = { cgv_logo } href="/"></Logo>
                     <Menu_frame>
-                        <a href="/main"><Menu>Main</Menu></a>
-                        <a href="/list"><Menu>무비차트</Menu></a>
+                        <Culture>CULTUREPLEX</Culture>
+                        <MenuBody>
+                            <a href="/main"><Menu>Main</Menu></a>
+                            <a href="/list"><Menu>무비차트</Menu></a>
+                        </MenuBody>
                     </Menu_frame>                        
                     { sessionStorage.length > 1 ?
                         <My_frame>
@@ -111,6 +124,7 @@ class TopMenuComponent extends Component {
 
                 <Route path="/main" component = { MainComponent }/>
                 <Route path="/list" component = { ListComponent }/>
+                <Route path="/detail" component = { DetailComponent }/>
                 <Route path="/reserve" component = { ReserveComponent }/>
                 <Route path="/reserve_pop" component = { ReservePopComponent }/>
                 <Route path="/payment" component = { Payment }/>

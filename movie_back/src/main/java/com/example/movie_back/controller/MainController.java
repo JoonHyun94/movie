@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import oracle.jdbc.proxy.annotation.Post;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
 // CrossWeb 설정 -> 허용 주소
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -32,8 +36,10 @@ public class MainController {
     public static final String WEB_DRIVER_ID = "webdriver.chrome.driver";
     public static final String WEB_DRIVER_PATH = "C:/Program Files/selenium/chromedriver_win32/chromedriver.exe";
     public String url;
+    public String movieSrc;
     
     ArrayList<HashMap<String,String>> movieList = new ArrayList<HashMap<String,String>>();
+    HashMap<String,String> movieDetail = new HashMap<String,String>();
     
     @GetMapping("/list")
     public ArrayList<HashMap<String,String>> movielist() {
@@ -157,4 +163,16 @@ public class MainController {
             return mem;
         }
     }
+
+    @PostMapping("/movieDetail")
+    public HashMap<String,String> movieDetail (HttpServletRequest req) {
+        movieSrc = req.getParameter("moviesrc");
+
+        System.out.println("moviesrc : " + movieSrc);
+        
+        movieDetail = movieListService.getMovieDetail(movieSrc);
+
+        return movieDetail;
+    }
+    
 }

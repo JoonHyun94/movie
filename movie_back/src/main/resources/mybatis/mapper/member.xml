@@ -48,9 +48,9 @@
 			WHERE id = #{id } AND UPPER(pw) LIKE('%' || UPPER(#{pw }) || '%')
 	</delete>
 
-	<update id = "addMemberImg">
+	<update id = "addMemberImg" parameterType="com.example.movie_back.dto.MemberVO">
 		UPDATE member 
-			SET user_img = #{imgsrc }
+			SET user_img = #{imgsrc }, pw = #{pw }, phone_number = #{phone_number }, email = #{email }
 			WHERE id = #{id }
 	</update>
 	

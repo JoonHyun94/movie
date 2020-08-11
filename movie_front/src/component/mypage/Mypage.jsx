@@ -99,7 +99,7 @@ const MyBody = styled.div`
     margin: 0 auto;
     width: 90%;
     height: 90%;
-    border: 1px solid #666;
+    border: 2px solid #666;
     @media only screen and (orientation: portrait) {
         flex-wrap: none;
         flex-direction: column;
@@ -413,7 +413,7 @@ const Circle = styled.div`
     width: 3vw; 
     height: 3vw; 
     border-radius: 3vw; 
-    border: 1px solid #666;
+    border: 2px solid #666;
     background-image: url(${ vintageconcrete });
     left: ${ 
         props => {
@@ -655,6 +655,8 @@ class Mypage extends Component {
         reserveIndex: 0,
         modify: false,
         textPw: null,
+        textPhone: null,
+        textEmail: null,
         userImg: null,
         file : '',
         previewURL : ''
@@ -674,7 +676,8 @@ class Mypage extends Component {
 
         axios.post('http://localhost:8088/myinfo', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
         .then(res => { 
-            console.log(res.data);
+            console.log(res.data.user_img);
+
             if(res.data.user_img === 'null') {
                 this.setState({
                     userId: res.data.id,
@@ -686,7 +689,7 @@ class Mypage extends Component {
                     userSignDate: res.data.sign_date,
                     userSecurity: res.data.security_Number,
                     nullCheck: 1,
-                    userImg: user
+                    userImg: ''
                 });
             } else {
                 this.setState({
@@ -699,7 +702,7 @@ class Mypage extends Component {
                     userSignDate: res.data.sign_date,
                     userSecurity: res.data.security_Number,
                     nullCheck: 1,
-                    userImg: "../../" + res.data.user_img
+                    userImg: res.data.user_img
                 });
             }
         })
@@ -809,7 +812,11 @@ class Mypage extends Component {
 
     textCheck = (e) => {
         if(e.target.name === "pw") {
-            this.state.pw = e.target.value;
+            this.state.textPw = e.target.value;
+        } else if(e.target.name === "phone") {
+            this.state.textPhone = e.target.value;
+        } else if(e.target.name === "email") {
+            this.state.textEmail = e.target.value;
         }
     }
 
@@ -836,27 +843,23 @@ class Mypage extends Component {
         }
     }
 
-    modifyMember = () => {
-        if(this.state.modify === false) {
-            this.setState({
-                modify: true
-            });
-        } else {
-            let form = new FormData()
-            form.append('file', this.state.file);
-            form.append('id', this.state.userId);
-            
-            axios.post('http://localhost:8088/imgUpload', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
-            .then(res => {
-                console.log(res.data);
-
-            }) 
-            .catch(res => console.log(res))
+    modifyMember = (pw, phone, email) => {
+        let form = new FormData()
+        form.append('file', this.state.file);
+        form.append('id', this.state.userId);
+        form.append('pw', pw);
+        form.append('phone', phone);
+        form.append('email', email);
+        
+        axios.post('http://localhost:8088/imgUpload', form, { headers: { 'Content-Type': 'multipart/form-data;' }}) 
+        .then(res => {
+            console.log(res.data);
 
             this.setState({
                 modify: false
             });
-        }
+        }) 
+        .catch(res => console.log(res))
     }
 
     removeReserve = (index) => {
@@ -882,7 +885,7 @@ class Mypage extends Component {
 
     render() {
         const { classes } = this.props;
-        const { completed, nullCheck, loadingText, reserveResult, date, modify, userImg } = this.state;
+        const { completed, nullCheck, loadingText, reserveResult, date, modify, userImg, textPw, textPhone, textEmail } = this.state;
 
         return (
             <React.Fragment>
@@ -912,7 +915,7 @@ class Mypage extends Component {
                                 <Circle circle = "4"/>
                                 <MyInfo>
                                     <UserImgDiv>
-                                        <UserImg type="file" src = { this.state.previewURL === '' ? userImg : this.state.previewURL }></UserImg>
+                                        <UserImg type = "file" src = { this.state.previewURL === '' ? userImg : this.state.previewURL }></UserImg>
                                     </UserImgDiv>
                                     <InfoBody>
                                         <UserName>{ this.state.userName }님</UserName>
@@ -989,7 +992,7 @@ class Mypage extends Component {
                                 <MyInfo modify = "true">
                                     <ImgFinger>
                                         <UserImgDiv modify = "true" onClick = { () => this.inputClick() }>
-                                            <UserImg type = "file" src = { this.state.previewURL === '' ? user : this.state.previewURL }></UserImg>
+                                            <UserImg type = "file" src = { this.state.previewURL === '' ? userImg : this.state.previewURL }></UserImg>
                                             <FormImg action="http://localhost:8088/imgUpload" method="post" enctype = "multipart/form-data">
                                                 <ImgInput type = "file" id = "file" name = "file" accept = 'image/jpg, impge/png, image/jpeg, image/gif'  onChange = { (e) => this.modifyImg(e) }/>
                                                 <ImgInput type = "submit" id = "submit" name = "submit" value = "업로드"/>
@@ -1026,7 +1029,7 @@ class Mypage extends Component {
                                             <TextInput name = "email" type = "email" onChange = { (e) => this.textCheck(e) }/>
                                         </TextBody>
                                     </Modify>
-                                    <Button user = "modify" onClick = { () => this.modifyMember() }>
+                                    <Button user = "modify" onClick = { () => this.modifyMember(textPw, textPhone, textEmail) }>
                                         회원정보수정
                                     </Button>
                                 </MyInfo>

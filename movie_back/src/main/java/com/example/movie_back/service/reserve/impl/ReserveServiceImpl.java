@@ -71,8 +71,6 @@ public class ReserveServiceImpl implements ReserveService{
         Elements eltheater = doc.select("#ticket .section-theater .col-body .theater-select .theater-list .area_theater_list ul li a");    
         Elements elno = doc.select("#ticket .section-theater .col-body .theater-select .theater-list .area_theater_list ul li");
 
-        // System.out.println(elname);
-        // System.out.println(eltheater);
         System.out.println(elno.attr("theater_cd"));
 
         String name;
@@ -127,8 +125,8 @@ public class ReserveServiceImpl implements ReserveService{
         HashMap<String,String> movieMap = new HashMap<String,String>();
         ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
         String url = "http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=" + model.getAttribute("areano") + "&theatercode=" + model.getAttribute("theaterno") + "&date=" + model.getAttribute("date"); //크롤링할 url지정
-		Document doc = null;        //Document에는 페이지의 전체 소스가 저장된다
-
+        Document doc = null;
+        
 		try {
 			doc = Jsoup.connect(url).get();
 		} catch (IOException e) {
@@ -189,7 +187,7 @@ public class ReserveServiceImpl implements ReserveService{
         HashMap<String,String> movieTimeMap = new HashMap<String,String>();
         ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
         String url = "http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=" + model.getAttribute("areano") + "&theatercode=" + model.getAttribute("theaterno") + "&date=" + model.getAttribute("date"); //크롤링할 url지정
-		Document doc = null;        //Document에는 페이지의 전체 소스가 저장된다
+		Document doc = null;
 
 		try {
 			doc = Jsoup.connect(url).get();

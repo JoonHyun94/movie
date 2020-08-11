@@ -10,4 +10,6 @@ public interface MovieListService {
     public ArrayList<HashMap<String,String>> getMovieList(String url);
     
     public ArrayList<HashMap<String,String>> getTopMovieList();
+
+    public HashMap<String,String> getMovieDetail(String moviesrc);
 }
