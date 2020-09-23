@@ -3,6 +3,9 @@
 
 # USAGE
 <ul>
+  <li>Java 1.8</li>
+  <li>Springboot 2.4</li>
+  <li>ORACLE XE 11g</li>
   <li>React</li>
   <li>JavaScript</li>
   <li>HTML</li>
