@@ -6,6 +6,8 @@
   <li>Java 1.8</li>
   <li>Springboot 2.4</li>
   <li>ORACLE XE 11g</li>
+  <li>Jsoup 1.8.3</li>
+  <li>Selenium 3.3.1</li>
   <li>React</li>
   <li>JavaScript</li>
   <li>HTML</li>
